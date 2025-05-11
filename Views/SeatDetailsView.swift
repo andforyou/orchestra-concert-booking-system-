@@ -104,7 +104,14 @@ struct SeatDetailsView: View {
         .navigationBarItems(leading: customBackButton)
         .background(
             NavigationLink(
-                destination: Text("Order Details Screen"), // Placeholder for next screen
+                destination: OrderDetailsView(
+                    concert: concert,
+                    selectedDate: selectedDate,
+                    selectedTimeSlot: selectedTimeSlot,
+                    selectedArea: selectedArea,
+                    selectedSeats: selectedSeats,
+                    totalPrice: subtotal
+                ),
                 isActive: $navigateToOrderDetails,
                 label: { EmptyView() }
             )
