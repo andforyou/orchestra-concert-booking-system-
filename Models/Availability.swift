@@ -22,6 +22,14 @@ struct Availability: Codable, Identifiable {
         return "\(date) \(month) \(year)"
     }
     
+    /// Standard initializer
+    init(date: String, month: String, year: String, timeSlots: [TimeSlot]) {
+        self.date = date
+        self.month = month
+        self.year = year
+        self.timeSlots = timeSlots
+    }
+    
     /// Coding keys for encoding and decoding
     enum CodingKeys: String, CodingKey {
         case date, month, year, timeSlots
@@ -47,17 +55,15 @@ struct TimeSlot: Codable, Identifiable {
         return "\(startTime) - \(endTime)"
     }
     
+    /// Standard initializer
+    init(startTime: String, endTime: String, isAvailable: Bool) {
+        self.startTime = startTime
+        self.endTime = endTime
+        self.isAvailable = isAvailable
+    }
+    
     /// Coding keys for encoding and decoding
     enum CodingKeys: String, CodingKey {
         case startTime, endTime, isAvailable
-    }
-    
-    // Custom init for UUID persistence across encoding/decoding
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        startTime = try container.decode(String.self, forKey: .startTime)
-        endTime = try container.decode(String.self, forKey: .endTime)
-        isAvailable = try container.decode(Bool.self, forKey: .isAvailable)
-        id = UUID() // Generate a new UUID on decode
     }
 }

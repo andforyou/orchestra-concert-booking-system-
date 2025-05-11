@@ -26,24 +26,15 @@ struct Seat: Codable, Identifiable {
         case reserved
     }
     
-    /// Coding keys for encoding and decoding
-    enum CodingKeys: String, CodingKey {
-        case number, areaCode, status
-    }
-    
-    // Custom init for UUID persistence across encoding/decoding
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        number = try container.decode(Int.self, forKey: .number)
-        areaCode = try container.decode(String.self, forKey: .areaCode)
-        status = try container.decode(SeatStatus.self, forKey: .status)
-        id = UUID() // Generate a new UUID on decode
-    }
-    
     /// Initialize a new seat with the given details
     init(number: Int, areaCode: String, status: SeatStatus) {
         self.number = number
         self.areaCode = areaCode
         self.status = status
+    }
+    
+    /// Coding keys for encoding and decoding
+    enum CodingKeys: String, CodingKey {
+        case number, areaCode, status
     }
 }

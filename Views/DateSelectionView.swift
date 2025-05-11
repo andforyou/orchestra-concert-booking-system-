@@ -7,12 +7,16 @@ struct DateSelectionView: View {
     @State private var navigateToSeatSelection = false
     @Environment(\.dismiss) private var dismiss
     
-    
-    // Available dates for the concert
-    let availableDates = [17, 18, 19]
+    // Load availability data from DataService
+    @State private var availabilityData: [Availability] = []
     
     // Available time slots
     let timeSlots = ["2:00PM - 4:00PM", "8:00PM - 10:00PM"]
+    
+    // Computed property to get available dates
+    private var availableDates: [Int] {
+        availabilityData.compactMap { Int($0.date) }.isEmpty ? [17, 18, 19] : availabilityData.compactMap { Int($0.date) }
+    }
     
     var body: some View {
         VStack(spacing: 20) {
@@ -106,15 +110,6 @@ struct DateSelectionView: View {
                 }
                 
                 HStack {
-                    //                    Spacer()
-                    //                    Text("Cancel")
-                    //                        .foregroundColor(.gray)
-                    //
-                    //                    Spacer()
-                    //
-                    //                    Text("OK")
-                    //                        .foregroundColor(.black)
-                    
                     Spacer()
                 }
                 .padding(.top, 8)
@@ -172,8 +167,6 @@ struct DateSelectionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: customBackButton)
-        // In DateSelectionView.swift, replace the NavigationLink code with this:
-        
         .background(
             NavigationLink(
                 destination: SeatAreaSelectionView(
@@ -185,6 +178,15 @@ struct DateSelectionView: View {
                 label: { EmptyView() }
             )
         )
+        .onAppear {
+            // Load availability data when view appears
+            loadAvailabilityData()
+        }
+    }
+    
+    // Load availability data from DataService
+    private func loadAvailabilityData() {
+        availabilityData = DataService.shared.loadAvailableDates()
     }
     
     // Custom calendar day view
@@ -225,13 +227,13 @@ struct DateSelectionView: View {
             .foregroundColor(.purple)
         }
     }
-    
-    // Preview
-    struct DateSelectionView_Previews: PreviewProvider {
-        static var previews: some View {
-            NavigationView {
-                DateSelectionView(concert: Concert.sampleConcert)
-            }
+}
+
+// Preview
+struct DateSelectionView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationView {
+            DateSelectionView(concert: Concert.sampleConcert)
         }
     }
 }

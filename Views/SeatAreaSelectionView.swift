@@ -9,92 +9,16 @@ struct SeatAreaSelectionView: View {
     @State private var selectedArea: String = "D" // Default to area D selected
     @State private var navigateToSeatDetails = false
     
-    // Area information
-    let areaInfo: [String: (price: Int, pros: [String], cons: [String])] = [
-        "A": (
-            price: 250,
-            pros: [
-                "Exceptional proximity to musicians allows you to see fine performance details",
-                "Immersive experience with immediate sound impact",
-                "Best view of soloists and conductor's expressions",
-                "Can observe instrumental techniques up close"
-            ],
-            cons: [
-                "Sound can be less balanced (might hear nearest instruments more prominently)",
-                "May require looking up at an angle",
-                "Usually the most expensive tickets",
-                "Bass frequencies might overwhelm in some venues"
-            ]
-        ),
-        "B": (
-            price: 300,
-            pros: [
-                "Often considered the acoustic \"sweet spot\" with balanced sound",
-                "Excellent overall view of the full orchestra",
-                "Comfortable viewing angle",
-                "Great balance between proximity and sound experience"
-            ],
-            cons: [
-                "Still relatively expensive",
-                "Less intimate than front rows"
-            ]
-        ),
-        "C": (
-            price: 200,
-            pros: [
-                "More affordable than front/middle sections",
-                "Good overall sound blend",
-                "Can see the entire orchestra without neck strain",
-                "Often underrated acoustically"
-            ],
-            cons: [
-                "Details of performances may be harder to observe",
-                "Further from the emotional impact of being close to musicians",
-                "May miss subtle nuances of quieter passages"
-            ]
-        ),
-        "D": (
-            price: 200,
-            pros: [
-                "Unique perspective of the orchestra",
-                "Sometimes better views of specific sections (piano, percussion)",
-                "Often priced lower than center sections"
-            ],
-            cons: [
-                "Asymmetrical sound experience",
-                "Limited view of opposite-side instruments",
-                "Can feel somewhat disconnected from full orchestral experience"
-            ]
-        ),
-        "E": (
-            price: 200,
-            pros: [
-                "Unique perspective of the orchestra",
-                "Sometimes better views of specific sections (piano, percussion)",
-                "Often priced lower than center sections"
-            ],
-            cons: [
-                "Asymmetrical sound experience",
-                "Limited view of opposite-side instruments",
-                "Can feel somewhat disconnected from full orchestral experience"
-            ]
-        ),
-        "F": (
-            price: 165,
-            pros: [
-                "Excellent panoramic view of entire orchestra",
-                "Often surprisingly good acoustics as sound rises",
-                "Can appreciate the full orchestral formation",
-                "Most affordable option",
-                "Most availability (many blue dots visible)"
-            ],
-            cons: [
-                "Greatest distance from performers",
-                "Cannot see fine details of performances",
-                "May feel less connected to the emotional experience"
-            ]
-        )
-    ]
+    // Load seat area data from DataService
+    @State private var seatAreas: [SeatArea] = []
+    
+    // Computed property to get area info for the selected area
+    private var selectedAreaInfo: (price: Int, pros: [String], cons: [String])? {
+        if let area = seatAreas.first(where: { $0.code == selectedArea }) {
+            return (price: area.price, pros: area.pros, cons: area.cons)
+        }
+        return nil
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -143,7 +67,7 @@ struct SeatAreaSelectionView: View {
             // Area Information
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    if let info = areaInfo[selectedArea] {
+                    if let info = selectedAreaInfo {
                         // Pros
                         Text("Pros:")
                             .font(.headline)
@@ -219,12 +143,21 @@ struct SeatAreaSelectionView: View {
                     selectedDate: selectedDate,
                     selectedTimeSlot: selectedTimeSlot,
                     selectedArea: selectedArea,
-                    areaPrice: areaInfo[selectedArea]?.price ?? 0
+                    areaPrice: selectedAreaInfo?.price ?? 0
                 ),
                 isActive: $navigateToSeatDetails,
                 label: { EmptyView() }
             )
         )
+        .onAppear {
+            // Load seat area data when view appears
+            loadSeatAreaData()
+        }
+    }
+    
+    // Load seat area data from DataService
+    private func loadSeatAreaData() {
+        seatAreas = DataService.shared.loadSeatAreas()
     }
     
     // Custom back button
@@ -241,7 +174,7 @@ struct SeatAreaSelectionView: View {
     }
 }
 
-// Keep the rest of your code unchanged
+// Keep the rest of the code the same
 struct AreaView: View {
     let areaName: String
     let isSelected: Bool

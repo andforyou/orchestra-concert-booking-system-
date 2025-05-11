@@ -85,8 +85,6 @@ struct ConcertDetailsView: View {
         }
         .navigationTitle("Symphonia")
         .navigationBarTitleDisplayMode(.inline)
-        // In ConcertDetailsView.swift, replace the NavigationLink code with this:
-
         .background(
             NavigationLink(
                 destination: DateSelectionView(concert: concert),

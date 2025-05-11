@@ -22,23 +22,19 @@ struct OrderDetailsView: View {
     @State private var isPhoneValid: Bool = true
     @State private var orderCompleted: Bool = false
     
-    // Available Australian states and territories
-    let australianStates = ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"]
+    // UI state for dropdown menus
+    @State private var showStateMenu: Bool = false
+    @State private var showSuburbMenu: Bool = false
+    @State private var showPostcodeMenu: Bool = false
     
-    // Australian postcodes by state
-    let postcodeRanges: [String: ClosedRange<Int>] = [
-        "ACT": 2600...2620,
-        "NSW": 1000...2999,
-        "NT": 800...999,
-        "QLD": 4000...4999,
-        "SA": 5000...5799,
-        "TAS": 7000...7999,
-        "VIC": 3000...3999,
-        "WA": 6000...6999
-    ]
+    // Load Australian location data from DataService
+    @State private var locationData: AustralianLocation?
     
     // Time slot strings
     let timeSlots = ["2:00PM - 4:00PM", "8:00PM - 10:00PM"]
+    
+    // Default states, suburbs, and postcodes for fallback
+    private let defaultStates = ["NSW", "VIC", "QLD", "WA", "SA", "TAS", "ACT", "NT"]
     
     var body: some View {
         ScrollView {
@@ -143,71 +139,119 @@ struct OrderDetailsView: View {
                     TextField("Address", text: $address)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                     
-                    Menu {
-                        ForEach(getAustralianSuburbs(for: state), id: \.self) { suburb in
-                            Button(action: { self.suburb = suburb }) {
-                                Text(suburb)
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Text(suburb.isEmpty ? "Suburb" : suburb)
-                                .foregroundColor(suburb.isEmpty ? .gray : .black)
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 5)
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                        )
-                    }
+                    // State dropdown - improved with button
+                    Text("State")
+                        .font(.subheadline)
+                        .padding(.top, 8)
                     
-                    Menu {
-                        ForEach(australianStates, id: \.self) { stateOption in
-                            Button(action: {
-                                self.state = stateOption
-                                // Reset suburb and postcode when state changes
-                                self.suburb = ""
-                                self.postCode = ""
-                            }) {
-                                Text(stateOption)
-                            }
-                        }
-                    } label: {
+                    Button(action: {
+                        showStateMenu = true
+                    }) {
                         HStack {
-                            Text(state.isEmpty ? "State" : state)
+                            Text(state.isEmpty ? "Select a state" : state)
                                 .foregroundColor(state.isEmpty ? .gray : .black)
                             Spacer()
                             Image(systemName: "chevron.down")
                                 .foregroundColor(.gray)
                         }
                         .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white)
+                        .cornerRadius(5)
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
                                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                         )
                     }
+                    .actionSheet(isPresented: $showStateMenu) {
+                        ActionSheet(
+                            title: Text("Select a State"),
+                            buttons: getAustralianStates().map { stateOption in
+                                .default(Text(stateOption)) {
+                                    self.state = stateOption
+                                    // Reset suburb and postcode when state changes
+                                    self.suburb = ""
+                                    self.postCode = ""
+                                }
+                            } + [.cancel()]
+                        )
+                    }
                     
-                    Menu {
-                        ForEach(getAustralianPostcodes(for: state), id: \.self) { postcode in
-                            Button(action: { self.postCode = postcode }) {
-                                Text(postcode)
-                            }
+                    // Suburb dropdown - only enabled if state is selected
+                    Text("Suburb")
+                        .font(.subheadline)
+                        .padding(.top, 8)
+                    
+                    Button(action: {
+                        if !state.isEmpty {
+                            showSuburbMenu = true
                         }
-                    } label: {
+                    }) {
                         HStack {
-                            Text(postCode.isEmpty ? "Post code" : postCode)
-                                .foregroundColor(postCode.isEmpty ? .gray : .black)
+                            Text(suburb.isEmpty ? "Select a suburb" : suburb)
+                                .foregroundColor(suburb.isEmpty ? .gray : .black)
                             Spacer()
                             Image(systemName: "chevron.down")
-                                .foregroundColor(.gray)
+                                .foregroundColor(state.isEmpty ? .gray.opacity(0.3) : .gray)
                         }
                         .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(state.isEmpty ? Color.gray.opacity(0.1) : Color.white)
+                        .cornerRadius(5)
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
                                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                    }
+                    .disabled(state.isEmpty)
+                    .actionSheet(isPresented: $showSuburbMenu) {
+                        ActionSheet(
+                            title: Text("Select a Suburb"),
+                            buttons: getAustralianSuburbs(for: state).map { suburbOption in
+                                .default(Text(suburbOption)) {
+                                    self.suburb = suburbOption
+                                    // Reset postcode when suburb changes
+                                    self.postCode = ""
+                                }
+                            } + [.cancel()]
+                        )
+                    }
+                    
+                    // Postcode dropdown - only enabled if suburb is selected
+                    Text("Postcode")
+                        .font(.subheadline)
+                        .padding(.top, 8)
+                    
+                    Button(action: {
+                        if !suburb.isEmpty {
+                            showPostcodeMenu = true
+                        }
+                    }) {
+                        HStack {
+                            Text(postCode.isEmpty ? "Select a postcode" : postCode)
+                                .foregroundColor(postCode.isEmpty ? .gray : .black)
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(suburb.isEmpty ? .gray.opacity(0.3) : .gray)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(suburb.isEmpty ? Color.gray.opacity(0.1) : Color.white)
+                        .cornerRadius(5)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                        )
+                    }
+                    .disabled(suburb.isEmpty)
+                    .actionSheet(isPresented: $showPostcodeMenu) {
+                        ActionSheet(
+                            title: Text("Select a Postcode"),
+                            buttons: getAustralianPostcodes(for: state, suburb: suburb).map { postcodeOption in
+                                .default(Text(postcodeOption)) {
+                                    self.postCode = postcodeOption
+                                }
+                            } + [.cancel()]
                         )
                     }
                 }
@@ -239,6 +283,15 @@ struct OrderDetailsView: View {
         } message: {
             Text("Thank you for your order! Your tickets have been reserved.")
         }
+        .onAppear {
+            // Load location data when view appears
+            loadLocationData()
+        }
+    }
+    
+    // Load Australian location data
+    private func loadLocationData() {
+        locationData = DataService.shared.loadAustralianLocations()
     }
     
     // Custom back button
@@ -280,8 +333,42 @@ struct OrderDetailsView: View {
     
     // Function to confirm order
     private func confirmOrder() {
-        // Here you would typically send the order details to a server
-        // For now, we'll just simulate a successful order
+        // Create customer info
+        let customerInfo = CustomerInfo(
+            name: name,
+            email: email,
+            phone: phone,
+            address: address,
+            suburb: suburb,
+            state: state,
+            postcode: postCode
+        )
+        
+        // Create booking
+        let booking = Booking(
+            date: String(selectedDate),
+            month: "August",
+            year: "2025",
+            timeSlot: timeSlots[selectedTimeSlot],
+            areaCode: selectedArea,
+            seatNumbers: Array(selectedSeats),
+            totalPrice: totalPrice,
+            customerInfo: customerInfo
+        )
+        
+        // Save booking to DataService
+        DataService.shared.saveBooking(booking)
+        
+        // Update seat statuses to reserved
+        for seatNumber in selectedSeats {
+            DataService.shared.updateSeatStatus(
+                areaCode: selectedArea,
+                seatNumber: seatNumber,
+                status: .reserved
+            )
+        }
+        
+        // Show completion alert
         orderCompleted = true
     }
     
@@ -293,61 +380,80 @@ struct OrderDetailsView: View {
         window?.rootViewController?.dismiss(animated: true)
     }
     
-    // Get suburbs based on selected state
-    private func getAustralianSuburbs(for state: String) -> [String] {
-        // In a real app, these would come from an API or database
-        switch state {
-        case "NSW":
-            return ["Sydney", "Newcastle", "Wollongong", "Parramatta", "Penrith", "Bondi"]
-        case "VIC":
-            return ["Melbourne", "Geelong", "Ballarat", "Bendigo", "Frankston", "St Kilda"]
-        case "QLD":
-            return ["Brisbane", "Gold Coast", "Sunshine Coast", "Townsville", "Cairns", "Toowoomba"]
-        case "WA":
-            return ["Perth", "Fremantle", "Mandurah", "Bunbury", "Joondalup", "Scarborough"]
-        case "SA":
-            return ["Adelaide", "Glenelg", "Port Adelaide", "Mount Gambier", "Whyalla", "Victor Harbor"]
-        case "TAS":
-            return ["Hobart", "Launceston", "Devonport", "Burnie", "Kingston", "Sandy Bay"]
-        case "ACT":
-            return ["Canberra", "Belconnen", "Woden", "Tuggeranong", "Gungahlin", "Civic"]
-        case "NT":
-            return ["Darwin", "Alice Springs", "Palmerston", "Katherine", "Nhulunbuy", "Tennant Creek"]
-        default:
-            return []
+    // Get Australian states from location data
+    private func getAustralianStates() -> [String] {
+        guard let locationData = locationData else {
+            return defaultStates // Fallback
         }
+        
+        return locationData.states.map { $0.code }
     }
     
-    // Get postcodes based on selected state
-    private func getAustralianPostcodes(for state: String) -> [String] {
-        guard let range = postcodeRanges[state] else { return [] }
-        
-        // Return a selection of postcodes for the chosen state
-        // In a real app, you would return postcodes relevant to the selected suburb
-        var postcodes: [String] = []
-        
-        switch state {
-        case "NSW":
-            postcodes = ["2000", "2010", "2020", "2031", "2050", "2077", "2113", "2150"]
-        case "VIC":
-            postcodes = ["3000", "3004", "3052", "3121", "3187", "3207", "3220", "3350"]
-        case "QLD":
-            postcodes = ["4000", "4101", "4217", "4350", "4551", "4670", "4700", "4870"]
-        case "WA":
-            postcodes = ["6000", "6005", "6027", "6100", "6150", "6210", "6230", "6280"]
-        case "SA":
-            postcodes = ["5000", "5015", "5034", "5067", "5158", "5211", "5253", "5290"]
-        case "TAS":
-            postcodes = ["7000", "7004", "7050", "7109", "7248", "7250", "7310", "7320"]
-        case "ACT":
-            postcodes = ["2600", "2601", "2602", "2606", "2611", "2615", "2617", "2618"]
-        case "NT":
-            postcodes = ["0800", "0810", "0820", "0830", "0835", "0870", "0880", "0885"]
-        default:
-            postcodes = []
+    // Get suburbs based on selected state from location data
+    private func getAustralianSuburbs(for state: String) -> [String] {
+        guard let locationData = locationData,
+              let stateData = locationData.states.first(where: { $0.code == state }) else {
+            // Fallback to the original implementation if data is not available
+            switch state {
+            case "NSW":
+                return ["Sydney", "Newcastle", "Wollongong", "Parramatta", "Penrith", "Bondi"]
+            case "VIC":
+                return ["Melbourne", "Geelong", "Ballarat", "Bendigo", "Frankston", "St Kilda"]
+            case "QLD":
+                return ["Brisbane", "Gold Coast", "Sunshine Coast", "Townsville", "Cairns", "Toowoomba"]
+            case "WA":
+                return ["Perth", "Fremantle", "Mandurah", "Bunbury", "Joondalup", "Scarborough"]
+            case "SA":
+                return ["Adelaide", "Glenelg", "Port Adelaide", "Mount Gambier", "Whyalla", "Victor Harbor"]
+            case "TAS":
+                return ["Hobart", "Launceston", "Devonport", "Burnie", "Kingston", "Sandy Bay"]
+            case "ACT":
+                return ["Canberra", "Belconnen", "Woden", "Tuggeranong", "Gungahlin", "Civic"]
+            case "NT":
+                return ["Darwin", "Alice Springs", "Palmerston", "Katherine", "Nhulunbuy", "Tennant Creek"]
+            default:
+                return []
+            }
         }
         
-        return postcodes
+        return stateData.suburbs.map { $0.name }
+    }
+    
+    // Get postcodes based on selected state and suburb from location data
+    private func getAustralianPostcodes(for state: String, suburb: String) -> [String] {
+        guard let locationData = locationData,
+              let stateData = locationData.states.first(where: { $0.code == state }) else {
+            // Fallback to some basic postcodes if data is not available
+            switch state {
+            case "NSW":
+                return ["2000", "2010", "2020", "2031", "2050"]
+            case "VIC":
+                return ["3000", "3004", "3052", "3121", "3187"]
+            case "QLD":
+                return ["4000", "4101", "4217", "4350", "4551"]
+            case "WA":
+                return ["6000", "6005", "6027", "6100", "6150"]
+            case "SA":
+                return ["5000", "5015", "5034", "5067", "5158"]
+            case "TAS":
+                return ["7000", "7004", "7050", "7109", "7248"]
+            case "ACT":
+                return ["2600", "2601", "2602", "2606", "2611"]
+            case "NT":
+                return ["0800", "0810", "0820", "0830", "0835"]
+            default:
+                return []
+            }
+        }
+        
+        // If suburb is selected, show only relevant postcodes
+        if !suburb.isEmpty,
+           let suburbData = stateData.suburbs.first(where: { $0.name == suburb }) {
+            return suburbData.postcodes
+        }
+        
+        // Otherwise, return some postcodes for the selected state
+        return stateData.postcodeRange
     }
 }
 

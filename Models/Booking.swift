@@ -37,26 +37,6 @@ struct Booking: Codable, Identifiable {
         return "\(date) \(month) \(year)"
     }
     
-    /// Coding keys for encoding and decoding
-    enum CodingKeys: String, CodingKey {
-        case date, month, year, timeSlot, areaCode, seatNumbers, totalPrice, customerInfo, bookingDate
-    }
-    
-    // Custom init for UUID persistence across encoding/decoding
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        date = try container.decode(String.self, forKey: .date)
-        month = try container.decode(String.self, forKey: .month)
-        year = try container.decode(String.self, forKey: .year)
-        timeSlot = try container.decode(String.self, forKey: .timeSlot)
-        areaCode = try container.decode(String.self, forKey: .areaCode)
-        seatNumbers = try container.decode([Int].self, forKey: .seatNumbers)
-        totalPrice = try container.decode(Int.self, forKey: .totalPrice)
-        customerInfo = try container.decode(CustomerInfo.self, forKey: .customerInfo)
-        bookingDate = try container.decode(Date.self, forKey: .bookingDate)
-        id = UUID() // Generate a new UUID on decode
-    }
-    
     /// Initialize a new booking with the given details
     init(date: String, month: String, year: String, timeSlot: String, areaCode: String, seatNumbers: [Int], totalPrice: Int, customerInfo: CustomerInfo) {
         self.date = date
@@ -68,6 +48,11 @@ struct Booking: Codable, Identifiable {
         self.totalPrice = totalPrice
         self.customerInfo = customerInfo
         self.bookingDate = Date()
+    }
+    
+    /// Coding keys for encoding and decoding
+    enum CodingKeys: String, CodingKey {
+        case date, month, year, timeSlot, areaCode, seatNumbers, totalPrice, customerInfo, bookingDate
     }
 }
 
@@ -93,4 +78,15 @@ struct CustomerInfo: Codable {
     
     /// Customer's postcode
     let postcode: String
+    
+    /// Initialize a new customer info object
+    init(name: String, email: String, phone: String, address: String, suburb: String, state: String, postcode: String) {
+        self.name = name
+        self.email = email
+        self.phone = phone
+        self.address = address
+        self.suburb = suburb
+        self.state = state
+        self.postcode = postcode
+    }
 }

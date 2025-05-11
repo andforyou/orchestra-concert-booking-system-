@@ -11,27 +11,8 @@ struct SeatDetailsView: View {
     @State private var selectedSeats: Set<Int> = []
     @State private var navigateToOrderDetails = false
     
-    // Define the available and unavailable seats for this area
-    // This would typically come from a backend but we'll hardcode for the demo
-    var areaSeats: [SeatStatus] {
-        // Each area has a different seat layout
-        switch selectedArea {
-        case "A":
-            return generateSeats(total: 25, unavailable: [3, 8, 12, 20, 21])
-        case "B":
-            return generateSeats(total: 30, unavailable: [5, 6, 14, 18, 22, 29])
-        case "C":
-            return generateSeats(total: 35, unavailable: [2, 7, 11, 15, 23, 30, 31])
-        case "D":
-            return generateSeats(total: 36, unavailable: [4, 9, 13, 18, 25, 27, 28, 30, 31, 32, 33, 34, 35])
-        case "E":
-            return generateSeats(total: 32, unavailable: [8, 10, 16, 20, 24, 25, 29])
-        case "F":
-            return generateSeats(total: 40, unavailable: [7, 13, 19, 25, 30, 34, 38])
-        default:
-            return []
-        }
-    }
+    // Load seats from DataService
+    @State private var seats: [Seat] = []
     
     // Calculate the subtotal based on selected seats
     var subtotal: Int {
@@ -52,11 +33,11 @@ struct SeatDetailsView: View {
                 
                 // Grid of seats
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: getColumnCount()), spacing: 10) {
-                    ForEach(areaSeats) { seat in
+                    ForEach(seats) { seat in
                         SeatView(
-                            seatNumber: seat.id,
-                            status: seat.status,
-                            isSelected: selectedSeats.contains(seat.id),
+                            seatNumber: seat.number,
+                            status: convertSeatStatus(seat.status),
+                            isSelected: selectedSeats.contains(seat.number),
                             onTap: { toggleSeatSelection(seat) }
                         )
                     }
@@ -103,19 +84,38 @@ struct SeatDetailsView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: customBackButton)
         .background(
-                    NavigationLink(
-                        destination: OrderDetailsView(
-                            concert: concert,
-                            selectedDate: selectedDate,
-                            selectedTimeSlot: selectedTimeSlot,
-                            selectedArea: selectedArea,
-                            selectedSeats: selectedSeats,
-                            totalPrice: subtotal
-                        ),
-                        isActive: $navigateToOrderDetails,
-                        label: { EmptyView() }
-                    )
-                )
+            NavigationLink(
+                destination: OrderDetailsView(
+                    concert: concert,
+                    selectedDate: selectedDate,
+                    selectedTimeSlot: selectedTimeSlot,
+                    selectedArea: selectedArea,
+                    selectedSeats: selectedSeats,
+                    totalPrice: subtotal
+                ),
+                isActive: $navigateToOrderDetails,
+                label: { EmptyView() }
+            )
+        )
+        .onAppear {
+            // Load seats when view appears
+            loadSeats()
+        }
+    }
+    
+    // Load seats from DataService
+    private func loadSeats() {
+        seats = DataService.shared.loadSeats(forArea: selectedArea)
+    }
+    
+    // Convert Seat.SeatStatus to SeatStatus.Status for compatibility with existing code
+    private func convertSeatStatus(_ status: Seat.SeatStatus) -> SeatStatus.Status {
+        switch status {
+        case .available:
+            return .available
+        case .unavailable, .reserved:
+            return .unavailable
+        }
     }
     
     // Custom back button
@@ -132,12 +132,12 @@ struct SeatDetailsView: View {
     }
     
     // Toggle seat selection
-    private func toggleSeatSelection(_ seat: SeatStatus) {
+    private func toggleSeatSelection(_ seat: Seat) {
         if seat.status == .available {
-            if selectedSeats.contains(seat.id) {
-                selectedSeats.remove(seat.id)
+            if selectedSeats.contains(seat.number) {
+                selectedSeats.remove(seat.number)
             } else {
-                selectedSeats.insert(seat.id)
+                selectedSeats.insert(seat.number)
             }
         }
     }
@@ -150,16 +150,6 @@ struct SeatDetailsView: View {
         case "F": return 6
         default: return 5
         }
-    }
-    
-    // Generate dummy seat data
-    private func generateSeats(total: Int, unavailable: [Int]) -> [SeatStatus] {
-        var seats = [SeatStatus]()
-        for i in 0..<total {
-            let status: SeatStatus.Status = unavailable.contains(i) ? .unavailable : .available
-            seats.append(SeatStatus(id: i, status: status))
-        }
-        return seats
     }
     
     // Legend item helper
@@ -218,7 +208,7 @@ struct SeatDetailsView: View {
     }
 }
 
-// Seat status model
+// Keep this model the same for compatibility with existing seat view code
 struct SeatStatus: Identifiable {
     let id: Int
     let status: Status
@@ -229,7 +219,7 @@ struct SeatStatus: Identifiable {
     }
 }
 
-// Seat view component
+// Seat view component (kept the same for compatibility)
 struct SeatView: View {
     let seatNumber: Int
     let status: SeatStatus.Status
