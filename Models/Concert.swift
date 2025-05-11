@@ -11,7 +11,6 @@ struct Concert: Identifiable, Codable {
     let programme: [String]
     let artistInfo: [String]
     
-    // Sample data for preview and testing
     static let sampleConcert = Concert(
         performerName: "ISLA MERCER",
         composerName: "RACHMANINOFF",

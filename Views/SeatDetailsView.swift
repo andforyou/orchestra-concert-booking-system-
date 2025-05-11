@@ -103,19 +103,19 @@ struct SeatDetailsView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: customBackButton)
         .background(
-            NavigationLink(
-                destination: OrderDetailsView(
-                    concert: concert,
-                    selectedDate: selectedDate,
-                    selectedTimeSlot: selectedTimeSlot,
-                    selectedArea: selectedArea,
-                    selectedSeats: selectedSeats,
-                    totalPrice: subtotal
-                ),
-                isActive: $navigateToOrderDetails,
-                label: { EmptyView() }
-            )
-        )
+                    NavigationLink(
+                        destination: OrderDetailsView(
+                            concert: concert,
+                            selectedDate: selectedDate,
+                            selectedTimeSlot: selectedTimeSlot,
+                            selectedArea: selectedArea,
+                            selectedSeats: selectedSeats,
+                            totalPrice: subtotal
+                        ),
+                        isActive: $navigateToOrderDetails,
+                        label: { EmptyView() }
+                    )
+                )
     }
     
     // Custom back button
