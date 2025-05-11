@@ -7,6 +7,7 @@ struct SeatDetailsView: View {
     let selectedArea: String
     let areaPrice: Int
     
+    @Environment(\.dismiss) private var dismiss
     @State private var selectedSeats: Set<Int> = []
     @State private var navigateToOrderDetails = false
     
@@ -113,7 +114,7 @@ struct SeatDetailsView: View {
     // Custom back button
     private var customBackButton: some View {
         Button(action: {
-            // This will navigate back to the previous screen
+            dismiss()
         }) {
             HStack {
                 Image(systemName: "chevron.left")
@@ -279,20 +280,5 @@ struct Trapezoid: Shape {
         }
         
         return path
-    }
-}
-
-// Preview
-struct SeatDetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            SeatDetailsView(
-                concert: Concert.sampleConcert,
-                selectedDate: 17,
-                selectedTimeSlot: 0,
-                selectedArea: "D",
-                areaPrice: 200
-            )
-        }
     }
 }

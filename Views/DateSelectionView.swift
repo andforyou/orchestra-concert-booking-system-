@@ -5,6 +5,8 @@ struct DateSelectionView: View {
     @State private var selectedDate: Int = 17  // Default to 17th
     @State private var selectedTimeSlot: Int = 0  // 0 for 2-4pm, 1 for 8-10pm
     @State private var navigateToSeatSelection = false
+    @Environment(\.dismiss) private var dismiss
+    
     
     // Available dates for the concert
     let availableDates = [17, 18, 19]
@@ -104,14 +106,14 @@ struct DateSelectionView: View {
                 }
                 
                 HStack {
-//                    Spacer()
-//                    Text("Cancel")
-//                        .foregroundColor(.gray)
-//                    
-//                    Spacer()
-//                    
-//                    Text("OK")
-//                        .foregroundColor(.black)
+                    //                    Spacer()
+                    //                    Text("Cancel")
+                    //                        .foregroundColor(.gray)
+                    //
+                    //                    Spacer()
+                    //
+                    //                    Text("OK")
+                    //                        .foregroundColor(.black)
                     
                     Spacer()
                 }
@@ -171,7 +173,7 @@ struct DateSelectionView: View {
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: customBackButton)
         // In DateSelectionView.swift, replace the NavigationLink code with this:
-
+        
         .background(
             NavigationLink(
                 destination: SeatAreaSelectionView(
@@ -214,7 +216,7 @@ struct DateSelectionView: View {
     // Custom back button
     private var customBackButton: some View {
         Button(action: {
-            // This will navigate back to the previous screen
+            dismiss()
         }) {
             HStack {
                 Image(systemName: "chevron.left")
@@ -223,13 +225,13 @@ struct DateSelectionView: View {
             .foregroundColor(.purple)
         }
     }
-}
-
-// Preview
-struct DateSelectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            DateSelectionView(concert: Concert.sampleConcert)
+    
+    // Preview
+    struct DateSelectionView_Previews: PreviewProvider {
+        static var previews: some View {
+            NavigationView {
+                DateSelectionView(concert: Concert.sampleConcert)
+            }
         }
     }
 }

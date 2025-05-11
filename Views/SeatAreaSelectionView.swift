@@ -5,6 +5,7 @@ struct SeatAreaSelectionView: View {
     let selectedDate: Int
     let selectedTimeSlot: Int
     
+    @Environment(\.dismiss) private var dismiss
     @State private var selectedArea: String = "D" // Default to area D selected
     @State private var navigateToSeatDetails = false
     
@@ -211,8 +212,6 @@ struct SeatAreaSelectionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: customBackButton)
-        // In SeatAreaSelectionView.swift, replace the NavigationLink code with this:
-
         .background(
             NavigationLink(
                 destination: SeatDetailsView(
@@ -231,7 +230,7 @@ struct SeatAreaSelectionView: View {
     // Custom back button
     private var customBackButton: some View {
         Button(action: {
-            // This will navigate back to the previous screen
+            dismiss()
         }) {
             HStack {
                 Image(systemName: "chevron.left")
@@ -242,7 +241,7 @@ struct SeatAreaSelectionView: View {
     }
 }
 
-// Area View Component
+// Keep the rest of your code unchanged
 struct AreaView: View {
     let areaName: String
     let isSelected: Bool
@@ -294,18 +293,5 @@ struct Arc: Shape {
                     clockwise: false)
         
         return path
-    }
-}
-
-// Preview
-struct SeatAreaSelectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            SeatAreaSelectionView(
-                concert: Concert.sampleConcert,
-                selectedDate: 17,
-                selectedTimeSlot: 0
-            )
-        }
     }
 }
