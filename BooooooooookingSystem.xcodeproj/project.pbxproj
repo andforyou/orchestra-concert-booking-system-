@@ -45,6 +45,16 @@
 			path = BooooooooookingSystemUITests;
 			sourceTree = "<group>";
 		};
+		830589CD2DD0CFDB006CF044 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		830589CE2DD0CFFA006CF044 /* Views */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Views;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,10 +85,12 @@
 		8305899A2DD0CEE9006CF044 = {
 			isa = PBXGroup;
 			children = (
+				830589CE2DD0CFFA006CF044 /* Views */,
 				830589A52DD0CEE9006CF044 /* BooooooooookingSystem */,
 				830589B32DD0CEEA006CF044 /* BooooooooookingSystemTests */,
 				830589BD2DD0CEEA006CF044 /* BooooooooookingSystemUITests */,
 				830589A42DD0CEE9006CF044 /* Products */,
+				830589CD2DD0CFDB006CF044 /* Models */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,6 +121,8 @@
 			);
 			fileSystemSynchronizedGroups = (
 				830589A52DD0CEE9006CF044 /* BooooooooookingSystem */,
+				830589CD2DD0CFDB006CF044 /* Models */,
+				830589CE2DD0CFFA006CF044 /* Views */,
 			);
 			name = BooooooooookingSystem;
 			packageProductDependencies = (
@@ -395,6 +409,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9GPR2DTCQ8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -422,6 +437,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9GPR2DTCQ8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

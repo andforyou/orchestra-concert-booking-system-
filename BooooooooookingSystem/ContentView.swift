@@ -1,24 +1,15 @@
-//
-//  ContentView.swift
-//  BooooooooookingSystem
-//
-//  Created by 牙后慧 on 2025/5/11.
-//
-
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationView {
+            ConcertDetailsView(concert: Concert.sampleConcert)
         }
-        .padding()
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
