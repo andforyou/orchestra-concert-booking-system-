@@ -58,13 +58,15 @@ struct SeatAreaSelectionView: View {
                                     AreaView(areaName: "E", isSelected: selectedArea == "E", action: { selectedArea = "E" })
                                         .frame(width: 80, height: 200)
                                 }
+                                
+                                // Stage - positioned below area A with enough space to avoid overlap
+                                StageView()
+//                                    .offset(y: 160)
                             }
                             
-                            // Stage - positioned below area A with enough space to avoid overlap
-                            StageView()
-                                .offset(y: 160)
+                            
                         }
-                        .frame(height: 350)
+                        .frame(height: 460)
                         .padding(.top, 20)
                         
                         // Area Information
