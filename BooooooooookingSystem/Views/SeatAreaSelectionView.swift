@@ -21,137 +21,141 @@ struct SeatAreaSelectionView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Seating Map
-            ZStack {
-                // Seating areas
-                VStack(spacing: 0) {
-                    // Area F - sized to match the total width of areas below
-                    AreaView(areaName: "F", isSelected: selectedArea == "F", action: { selectedArea = "F" })
-                        .frame(width: 310, height: 100)
-                    
-                    HStack(spacing: 0) {
-                        // Area D (Left side)
-                        AreaView(areaName: "D", isSelected: selectedArea == "D", action: { selectedArea = "D" })
-                            .frame(width: 80, height: 200)
-                        
-                        // Central sections
-                        VStack(spacing: 0) {
-                            // Area C
-                            AreaView(areaName: "C", isSelected: selectedArea == "C", action: { selectedArea = "C" })
-                                .frame(height: 60)
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // Seating Map
+                        ZStack {
+                            // Seating areas
+                            VStack(spacing: 0) {
+                                // Area F - sized to match the total width of areas below
+                                AreaView(areaName: "F", isSelected: selectedArea == "F", action: { selectedArea = "F" })
+                                    .frame(width: 310, height: 100)
+                                
+                                HStack(spacing: 0) {
+                                    // Area D (Left side)
+                                    AreaView(areaName: "D", isSelected: selectedArea == "D", action: { selectedArea = "D" })
+                                        .frame(width: 80, height: 200)
+                                    
+                                    // Central sections
+                                    VStack(spacing: 0) {
+                                        // Area C
+                                        AreaView(areaName: "C", isSelected: selectedArea == "C", action: { selectedArea = "C" })
+                                            .frame(height: 60)
+                                        
+                                        // Area B
+                                        AreaView(areaName: "B", isSelected: selectedArea == "B", action: { selectedArea = "B" })
+                                            .frame(height: 60)
+                                        
+                                        // Area A
+                                        AreaView(areaName: "A", isSelected: selectedArea == "A", action: { selectedArea = "A" })
+                                            .frame(height: 80)
+                                    }
+                                    .frame(width: 150)
+                                    
+                                    // Area E (Right side)
+                                    AreaView(areaName: "E", isSelected: selectedArea == "E", action: { selectedArea = "E" })
+                                        .frame(width: 80, height: 200)
+                                }
+                            }
                             
-                            // Area B
-                            AreaView(areaName: "B", isSelected: selectedArea == "B", action: { selectedArea = "B" })
-                                .frame(height: 60)
-                            
-                            // Area A
-                            AreaView(areaName: "A", isSelected: selectedArea == "A", action: { selectedArea = "A" })
-                                .frame(height: 80)
+                            // Stage - positioned below area A with enough space to avoid overlap
+                            StageView()
+                                .offset(y: 160)
                         }
-                        .frame(width: 150)
+                        .frame(height: 350)
+                        .padding(.top, 20)
                         
-                        // Area E (Right side)
-                        AreaView(areaName: "E", isSelected: selectedArea == "E", action: { selectedArea = "E" })
-                            .frame(width: 80, height: 200)
+                        // Area Information
+                        VStack(alignment: .leading, spacing: 3) {
+                            if let info = selectedAreaInfo {
+                                // Pros
+                                Text("Pros:")
+                                    .font(.headline)
+                                    .padding(.top, 8)
+                                
+                                ForEach(info.pros, id: \.self) { pro in
+                                    HStack(alignment: .top) {
+                                        Text("•")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                        
+                                        Text(pro)
+                                            .font(.subheadline)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                    .padding(.leading, 4)
+                                }
+                                
+                                // Cons
+                                Text("Cons:")
+                                    .font(.headline)
+                                    .padding(.top, 8)
+                                
+                                ForEach(info.cons, id: \.self) { con in
+                                    HStack(alignment: .top) {
+                                        Text("•")
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                        
+                                        Text(con)
+                                            .font(.subheadline)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                    .padding(.leading, 4)
+                                }
+                                
+                                // Price
+                                Text("Area \(selectedArea): $\(info.price)")
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.purple)
+                                    .padding(.top, 16)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                     }
+                    .frame(minHeight: geometry.size.height * 0.8)
                 }
                 
-                // Stage - positioned below area A with enough space to avoid overlap
-                StageView()
-                    .offset(y: 160)
-            }
-            .frame(height: 350)
-            .padding(.top, 20)
-            
-            // Area Information
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    if let info = selectedAreaInfo {
-                        // Pros
-                        Text("Pros:")
-                            .font(.headline)
-                            .padding(.top, 8)
-                        
-                        ForEach(info.pros, id: \.self) { pro in
-                            HStack(alignment: .top) {
-                                Text("•")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
-                                Text(pro)
-                                    .font(.subheadline)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .padding(.leading, 4)
-                        }
-                        
-                        // Cons
-                        Text("Cons:")
-                            .font(.headline)
-                            .padding(.top, 8)
-                        
-                        ForEach(info.cons, id: \.self) { con in
-                            HStack(alignment: .top) {
-                                Text("•")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
-                                Text(con)
-                                    .font(.subheadline)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                            .padding(.leading, 4)
-                        }
-                        
-                        // Price
-                        Text("Area \(selectedArea): $\(info.price)")
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.purple)
-                            .padding(.top, 16)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
+                // Next button
+                Button(action: {
+                    navigateToSeatDetails = true
+                }) {
+                    Text("Next")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.purple)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                 }
-                .padding(.horizontal)
-                .padding(.top, 8)
+                .padding()
             }
-            .frame(maxHeight: .infinity)
-            
-            // Next button
-            Button(action: {
-                navigateToSeatDetails = true
-            }) {
-                Text("Next")
-                    .fontWeight(.semibold)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.purple)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
-            .padding()
-        }
-        .navigationTitle("Symphonia")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: customBackButton)
-        .background(
-            NavigationLink(
-                destination: SeatDetailsView(
-                    concert: concert,
-                    selectedDate: selectedDate,
-                    selectedTimeSlot: selectedTimeSlot,
-                    selectedArea: selectedArea,
-                    areaPrice: selectedAreaInfo?.price ?? 0
-                ),
-                isActive: $navigateToSeatDetails,
-                label: { EmptyView() }
+            .navigationTitle("Symphonia")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .navigationBarItems(leading: customBackButton)
+            .background(
+                NavigationLink(
+                    destination: SeatDetailsView(
+                        concert: concert,
+                        selectedDate: selectedDate,
+                        selectedTimeSlot: selectedTimeSlot,
+                        selectedArea: selectedArea,
+                        areaPrice: selectedAreaInfo?.price ?? 0
+                    ),
+                    isActive: $navigateToSeatDetails,
+                    label: { EmptyView() }
+                )
             )
-        )
-        .onAppear {
-            // Load seat area data when view appears
-            loadSeatAreaData()
+            .onAppear {
+                // Load seat area data when view appears
+                loadSeatAreaData()
+            }
         }
     }
     
@@ -227,4 +231,12 @@ struct Arc: Shape {
         
         return path
     }
+}
+
+#Preview {
+    SeatAreaSelectionView(
+        concert: Concert.sampleConcert,
+        selectedDate: 17,
+        selectedTimeSlot: 0
+    )
 }

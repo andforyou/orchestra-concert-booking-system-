@@ -85,7 +85,7 @@ struct OrderDetailsView: View {
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.emailAddress)
                         .autocapitalization(.none)
-                        .onChange(of: email) { newValue in
+                        .onChange(of: email) { oldValue, newValue in
                             isEmailValid = isValidEmail(newValue)
                         }
                         .overlay(
@@ -111,7 +111,7 @@ struct OrderDetailsView: View {
                     TextField("", text: $phone)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.phonePad)
-                        .onChange(of: phone) { newValue in
+                        .onChange(of: phone) { oldValue, newValue in
                             isPhoneValid = isValidAustralianPhone(newValue)
                         }
                         .overlay(
