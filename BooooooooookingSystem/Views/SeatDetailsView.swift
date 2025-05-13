@@ -1,28 +1,32 @@
 import SwiftUI
 
 struct SeatDetailsView: View {
-    let concert: Concert
-    let selectedDate: Int
-    let selectedTimeSlot: Int
-    let selectedArea: String
-    let areaPrice: Int
-    
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var concertVM: ConcertViewModel
+    @EnvironmentObject var bookingVM: BookingViewModel
+    @Binding var path: NavigationPath
+
     @State private var selectedSeats: Set<Int> = []
-    @State private var navigateToOrderDetails = false
-    
-    // Load seats from DataService
-    @State private var seats: [Seat] = []
-    
-    // Calculate the subtotal based on selected seats
-    var subtotal: Int {
-        return selectedSeats.count * areaPrice
+
+    private var seatArea: SeatArea? {
+        bookingVM.selectedSeatArea
+    }
+
+    private var seats: [Seat] {
+        seatArea?.seats ?? []
+    }
+
+    private var areaPrice: Int {
+        seatArea?.price ?? 0
+    }
+
+    private var subtotal: Int {
+        selectedSeats.count * areaPrice
     }
     
     var body: some View {
         VStack {
             // Area title
-            Text("Area \(selectedArea) Seats")
+            Text("Area \(seatArea?.code ?? "?") Seats")
                 .font(.headline)
                 .padding(.top)
             
@@ -65,7 +69,8 @@ struct SeatDetailsView: View {
             
             // Next button
             Button(action: {
-                navigateToOrderDetails = true
+                bookingVM.selectedSeats = seats.filter { selectedSeats.contains($0.number) }
+                path.append(BookingRoute.bookingDetails)
             }) {
                 Text("Next")
                     .fontWeight(.semibold)
@@ -81,31 +86,6 @@ struct SeatDetailsView: View {
         }
         .navigationTitle("Symphonia")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: customBackButton)
-        .background(
-            NavigationLink(
-                destination: OrderDetailsView(
-                    concert: concert,
-                    selectedDate: selectedDate,
-                    selectedTimeSlot: selectedTimeSlot,
-                    selectedArea: selectedArea,
-                    selectedSeats: selectedSeats,
-                    totalPrice: subtotal
-                ),
-                isActive: $navigateToOrderDetails,
-                label: { EmptyView() }
-            )
-        )
-        .onAppear {
-            // Load seats when view appears
-            loadSeats()
-        }
-    }
-    
-    // Load seats from DataService
-    private func loadSeats() {
-        seats = DataService.shared.loadSeats(forArea: selectedArea)
     }
     
     // Convert Seat.SeatStatus to SeatStatus.Status for compatibility with existing code
@@ -115,19 +95,6 @@ struct SeatDetailsView: View {
             return .available
         case .unavailable, .reserved:
             return .unavailable
-        }
-    }
-    
-    // Custom back button
-    private var customBackButton: some View {
-        Button(action: {
-            dismiss()
-        }) {
-            HStack {
-                Image(systemName: "chevron.left")
-                Text("Back")
-            }
-            .foregroundColor(.purple)
         }
     }
     
@@ -144,10 +111,10 @@ struct SeatDetailsView: View {
     
     // Determine column count based on area
     private func getColumnCount() -> Int {
-        switch selectedArea {
+        switch seatArea?.code {
         case "A", "B", "C": return 5
         case "D", "E": return 4
-        case "F": return 6
+        case "F": return 8
         default: return 5
         }
     }
@@ -167,7 +134,7 @@ struct SeatDetailsView: View {
     // Different shapes for different seating areas
     @ViewBuilder
     private var areaShape: some View {
-        switch selectedArea {
+        switch seatArea?.code {
         case "A":
             Rectangle()
                 .fill(Color.purple)
@@ -277,5 +244,13 @@ struct Trapezoid: Shape {
         }
         
         return path
+    }
+}
+
+#Preview {
+    NavigationStack {
+        SeatDetailsView(path: .constant(NavigationPath()))
+            .environmentObject(ConcertViewModel())
+            .environmentObject(BookingViewModel())
     }
 }
