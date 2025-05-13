@@ -29,35 +29,42 @@
 		830589BA2DD0CEEA006CF044 /* BooooooooookingSystemUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooooooooookingSystemUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		78F0A66D2DD16C1A0024AEF8 /* Exceptions for "BooooooooookingSystem" folder in "BooooooooookingSystem" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BooooooooookingSystemTests/BooooooooookingSystemTests.swift,
+				BooooooooookingSystemUITests/BooooooooookingSystemUITests.swift,
+				BooooooooookingSystemUITests/BooooooooookingSystemUITestsLaunchTests.swift,
+			);
+			target = 830589A22DD0CEE9006CF044 /* BooooooooookingSystem */;
+		};
+		78F0A66E2DD16C1A0024AEF8 /* Exceptions for "BooooooooookingSystem" folder in "BooooooooookingSystemTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BooooooooookingSystemTests/BooooooooookingSystemTests.swift,
+			);
+			target = 830589AF2DD0CEEA006CF044 /* BooooooooookingSystemTests */;
+		};
+		78F0A6742DD16C1C0024AEF8 /* Exceptions for "BooooooooookingSystem" folder in "BooooooooookingSystemUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BooooooooookingSystemUITests/BooooooooookingSystemUITests.swift,
+				BooooooooookingSystemUITests/BooooooooookingSystemUITestsLaunchTests.swift,
+			);
+			target = 830589B92DD0CEEA006CF044 /* BooooooooookingSystemUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		830589A52DD0CEE9006CF044 /* BooooooooookingSystem */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				78F0A66D2DD16C1A0024AEF8 /* Exceptions for "BooooooooookingSystem" folder in "BooooooooookingSystem" target */,
+				78F0A66E2DD16C1A0024AEF8 /* Exceptions for "BooooooooookingSystem" folder in "BooooooooookingSystemTests" target */,
+				78F0A6742DD16C1C0024AEF8 /* Exceptions for "BooooooooookingSystem" folder in "BooooooooookingSystemUITests" target */,
+			);
 			path = BooooooooookingSystem;
-			sourceTree = "<group>";
-		};
-		830589B32DD0CEEA006CF044 /* BooooooooookingSystemTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = BooooooooookingSystemTests;
-			sourceTree = "<group>";
-		};
-		830589BD2DD0CEEA006CF044 /* BooooooooookingSystemUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = BooooooooookingSystemUITests;
-			sourceTree = "<group>";
-		};
-		830589CD2DD0CFDB006CF044 /* Models */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Models;
-			sourceTree = "<group>";
-		};
-		830589CE2DD0CFFA006CF044 /* Views */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Views;
-			sourceTree = "<group>";
-		};
-		830589F62DD0F78B006CF044 /* Resources */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -90,13 +97,8 @@
 		8305899A2DD0CEE9006CF044 = {
 			isa = PBXGroup;
 			children = (
-				830589F62DD0F78B006CF044 /* Resources */,
-				830589CE2DD0CFFA006CF044 /* Views */,
 				830589A52DD0CEE9006CF044 /* BooooooooookingSystem */,
-				830589B32DD0CEEA006CF044 /* BooooooooookingSystemTests */,
-				830589BD2DD0CEEA006CF044 /* BooooooooookingSystemUITests */,
 				830589A42DD0CEE9006CF044 /* Products */,
-				830589CD2DD0CFDB006CF044 /* Models */,
 			);
 			sourceTree = "<group>";
 		};
@@ -127,9 +129,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				830589A52DD0CEE9006CF044 /* BooooooooookingSystem */,
-				830589CD2DD0CFDB006CF044 /* Models */,
-				830589CE2DD0CFFA006CF044 /* Views */,
-				830589F62DD0F78B006CF044 /* Resources */,
 			);
 			name = BooooooooookingSystem;
 			packageProductDependencies = (
@@ -151,9 +150,6 @@
 			dependencies = (
 				830589B22DD0CEEA006CF044 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				830589B32DD0CEEA006CF044 /* BooooooooookingSystemTests */,
-			);
 			name = BooooooooookingSystemTests;
 			packageProductDependencies = (
 			);
@@ -173,9 +169,6 @@
 			);
 			dependencies = (
 				830589BC2DD0CEEA006CF044 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				830589BD2DD0CEEA006CF044 /* BooooooooookingSystemUITests */,
 			);
 			name = BooooooooookingSystemUITests;
 			packageProductDependencies = (
@@ -424,6 +417,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -452,6 +446,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
