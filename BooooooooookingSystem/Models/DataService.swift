@@ -28,20 +28,20 @@ class DataService {
     
     // MARK: - Data Loading Methods
     
-    /// Load available dates and time slots from JSON
-    func loadAvailableDates() -> [Availability] {
-        // Try to read the JSON file
-        if let data = loadJsonFileData(named: FileNames.availability) {
-            do {
-                return try JSONDecoder().decode([Availability].self, from: data)
-            } catch {
-                print("Error decoding availability data: \(error)")
-            }
-        }
-        
-        // If data couldn't be loaded, return hardcoded fallback data
-        return createFallbackAvailabilityData()
-    }
+//    /// Load available dates and time slots from JSON
+//    func loadAvailableDates() -> [AvailableDate] {
+//        // Try to read the JSON file
+//        if let data = loadJsonFileData(named: FileNames.availability) {
+//            do {
+//                return try JSONDecoder().decode([AvailableDate].self, from: data)
+//            } catch {
+//                print("Error decoding availability data: \(error)")
+//            }
+//        }
+//        
+//        // If data couldn't be loaded, return hardcoded fallback data
+//        return createFallbackAvailabilityData()
+//    }
     
     /// Load seat area information from JSON
     func loadSeatAreas() -> [SeatArea] {
@@ -55,36 +55,36 @@ class DataService {
         }
         
         // If data couldn't be loaded, return hardcoded fallback data
-        return createFallbackSeatAreaData()
+        return [] /*createFallbackSeatAreaData()*/
     }
     
-    /// Load seats for a specific area from JSON, updating status from UserDefaults
-    func loadSeats(forArea: String) -> [Seat] {
-        // Try to read the JSON file
-        if let data = loadJsonFileData(named: FileNames.seats(forArea: forArea)) {
-            do {
-                var seats = try JSONDecoder().decode([Seat].self, from: data)
-                
-                // Update seats with any saved statuses
-                if let savedStatuses = getSavedSeatStatuses() {
-                    for (index, seat) in seats.enumerated() {
-                        let key = "\(seat.areaCode)_\(seat.number)"
-                        if let statusString = savedStatuses[key],
-                           let status = Seat.SeatStatus(rawValue: statusString) {
-                            seats[index].status = status
-                        }
-                    }
-                }
-                
-                return seats
-            } catch {
-                print("Error decoding seats data: \(error)")
-            }
-        }
-        
-        // If data couldn't be loaded, return hardcoded fallback data
-        return createFallbackSeatsData(forArea: forArea)
-    }
+//    /// Load seats for a specific area from JSON, updating status from UserDefaults
+//    func loadSeats(forArea: String) -> [Seat] {
+//        // Try to read the JSON file
+//        if let data = loadJsonFileData(named: FileNames.seats(forArea: forArea)) {
+//            do {
+//                var seats = try JSONDecoder().decode([Seat].self, from: data)
+//                
+//                // Update seats with any saved statuses
+//                if let savedStatuses = getSavedSeatStatuses() {
+//                    for (index, seat) in seats.enumerated() {
+//                        let key = "\(seat.areaCode)_\(seat.number)"
+//                        if let statusString = savedStatuses[key],
+//                           let status = Seat.SeatStatus(rawValue: statusString) {
+//                            seats[index].status = status
+//                        }
+//                    }
+//                }
+//                
+//                return seats
+//            } catch {
+//                print("Error decoding seats data: \(error)")
+//            }
+//        }
+//        
+//        // If data couldn't be loaded, return hardcoded fallback data
+//        return createFallbackSeatsData(forArea: forArea)
+//    }
     
     /// Load Australian location data from JSON
     func loadAustralianLocations() -> AustralianLocation? {
@@ -184,123 +184,123 @@ class DataService {
     
     // MARK: - Fallback Data Creation
     
-    /// Create fallback availability data if the JSON file can't be loaded
-    private func createFallbackAvailabilityData() -> [Availability] {
-        return [
-            Availability(date: "17", month: "August", year: "2025", timeSlots: [
-                TimeSlot(startTime: "2:00PM", endTime: "4:00PM", isAvailable: true),
-                TimeSlot(startTime: "8:00PM", endTime: "10:00PM", isAvailable: true)
-            ]),
-            Availability(date: "18", month: "August", year: "2025", timeSlots: [
-                TimeSlot(startTime: "2:00PM", endTime: "4:00PM", isAvailable: true),
-                TimeSlot(startTime: "8:00PM", endTime: "10:00PM", isAvailable: true)
-            ]),
-            Availability(date: "19", month: "August", year: "2025", timeSlots: [
-                TimeSlot(startTime: "2:00PM", endTime: "4:00PM", isAvailable: true),
-                TimeSlot(startTime: "8:00PM", endTime: "10:00PM", isAvailable: true)
-            ])
-        ]
-    }
+//    /// Create fallback availability data if the JSON file can't be loaded
+//    private func createFallbackAvailabilityData() -> [AvailableDate] {
+//        return [
+//            AvailableDate(date: "17", month: "August", year: "2025", timeSlots: [
+//                TimeSlot(startTime: "2:00PM", endTime: "4:00PM", isAvailable: true),
+//                TimeSlot(startTime: "8:00PM", endTime: "10:00PM", isAvailable: true)
+//            ]),
+//            AvailableDate(date: "18", month: "August", year: "2025", timeSlots: [
+//                TimeSlot(startTime: "2:00PM", endTime: "4:00PM", isAvailable: true),
+//                TimeSlot(startTime: "8:00PM", endTime: "10:00PM", isAvailable: true)
+//            ]),
+//            AvailableDate(date: "19", month: "August", year: "2025", timeSlots: [
+//                TimeSlot(startTime: "2:00PM", endTime: "4:00PM", isAvailable: true),
+//                TimeSlot(startTime: "8:00PM", endTime: "10:00PM", isAvailable: true)
+//            ])
+//        ]
+//    }
+//    
+//    /// Create fallback seat area data if the JSON file can't be loaded
+//    private func createFallbackSeatAreaData() -> [SeatArea] {
+//        return [
+//            SeatArea(code: "A", price: 250, pros: [
+//                "Exceptional proximity to musicians allows you to see fine performance details",
+//                "Immersive experience with immediate sound impact",
+//                "Best view of soloists and conductor's expressions",
+//                "Can observe instrumental techniques up close"
+//            ], cons: [
+//                "Sound can be less balanced (might hear nearest instruments more prominently)",
+//                "May require looking up at an angle",
+//                "Usually the most expensive tickets",
+//                "Bass frequencies might overwhelm in some venues"
+//            ]),
+//            SeatArea(code: "B", price: 300, pros: [
+//                "Often considered the acoustic \"sweet spot\" with balanced sound",
+//                "Excellent overall view of the full orchestra",
+//                "Comfortable viewing angle",
+//                "Great balance between proximity and sound experience"
+//            ], cons: [
+//                "Still relatively expensive",
+//                "Less intimate than front rows"
+//            ]),
+//            SeatArea(code: "C", price: 200, pros: [
+//                "More affordable than front/middle sections",
+//                "Good overall sound blend",
+//                "Can see the entire orchestra without neck strain",
+//                "Often underrated acoustically"
+//            ], cons: [
+//                "Details of performances may be harder to observe",
+//                "Further from the emotional impact of being close to musicians",
+//                "May miss subtle nuances of quieter passages"
+//            ]),
+//            SeatArea(code: "D", price: 200, pros: [
+//                "Unique perspective of the orchestra",
+//                "Sometimes better views of specific sections (piano, percussion)",
+//                "Often priced lower than center sections"
+//            ], cons: [
+//                "Asymmetrical sound experience",
+//                "Limited view of opposite-side instruments",
+//                "Can feel somewhat disconnected from full orchestral experience"
+//            ]),
+//            SeatArea(code: "E", price: 200, pros: [
+//                "Unique perspective of the orchestra",
+//                "Sometimes better views of specific sections (piano, percussion)",
+//                "Often priced lower than center sections"
+//            ], cons: [
+//                "Asymmetrical sound experience",
+//                "Limited view of opposite-side instruments",
+//                "Can feel somewhat disconnected from full orchestral experience"
+//            ]),
+//            SeatArea(code: "F", price: 165, pros: [
+//                "Excellent panoramic view of entire orchestra",
+//                "Often surprisingly good acoustics as sound rises",
+//                "Can appreciate the full orchestral formation",
+//                "Most affordable option",
+//                "Most availability (many seats available)"
+//            ], cons: [
+//                "Greatest distance from performers",
+//                "Cannot see fine details of performances",
+//                "May feel less connected to the emotional experience"
+//            ])
+//        ]
+//    }
     
-    /// Create fallback seat area data if the JSON file can't be loaded
-    private func createFallbackSeatAreaData() -> [SeatArea] {
-        return [
-            SeatArea(code: "A", price: 250, pros: [
-                "Exceptional proximity to musicians allows you to see fine performance details",
-                "Immersive experience with immediate sound impact",
-                "Best view of soloists and conductor's expressions",
-                "Can observe instrumental techniques up close"
-            ], cons: [
-                "Sound can be less balanced (might hear nearest instruments more prominently)",
-                "May require looking up at an angle",
-                "Usually the most expensive tickets",
-                "Bass frequencies might overwhelm in some venues"
-            ]),
-            SeatArea(code: "B", price: 300, pros: [
-                "Often considered the acoustic \"sweet spot\" with balanced sound",
-                "Excellent overall view of the full orchestra",
-                "Comfortable viewing angle",
-                "Great balance between proximity and sound experience"
-            ], cons: [
-                "Still relatively expensive",
-                "Less intimate than front rows"
-            ]),
-            SeatArea(code: "C", price: 200, pros: [
-                "More affordable than front/middle sections",
-                "Good overall sound blend",
-                "Can see the entire orchestra without neck strain",
-                "Often underrated acoustically"
-            ], cons: [
-                "Details of performances may be harder to observe",
-                "Further from the emotional impact of being close to musicians",
-                "May miss subtle nuances of quieter passages"
-            ]),
-            SeatArea(code: "D", price: 200, pros: [
-                "Unique perspective of the orchestra",
-                "Sometimes better views of specific sections (piano, percussion)",
-                "Often priced lower than center sections"
-            ], cons: [
-                "Asymmetrical sound experience",
-                "Limited view of opposite-side instruments",
-                "Can feel somewhat disconnected from full orchestral experience"
-            ]),
-            SeatArea(code: "E", price: 200, pros: [
-                "Unique perspective of the orchestra",
-                "Sometimes better views of specific sections (piano, percussion)",
-                "Often priced lower than center sections"
-            ], cons: [
-                "Asymmetrical sound experience",
-                "Limited view of opposite-side instruments",
-                "Can feel somewhat disconnected from full orchestral experience"
-            ]),
-            SeatArea(code: "F", price: 165, pros: [
-                "Excellent panoramic view of entire orchestra",
-                "Often surprisingly good acoustics as sound rises",
-                "Can appreciate the full orchestral formation",
-                "Most affordable option",
-                "Most availability (many seats available)"
-            ], cons: [
-                "Greatest distance from performers",
-                "Cannot see fine details of performances",
-                "May feel less connected to the emotional experience"
-            ])
-        ]
-    }
-    
-    /// Create fallback seat data if the JSON file can't be loaded
-    private func createFallbackSeatsData(forArea area: String) -> [Seat] {
-        // Create a different number of seats based on the area
-        let seatCount: Int
-        switch area {
-        case "A": seatCount = 25
-        case "B": seatCount = 30
-        case "C": seatCount = 35
-        case "D": seatCount = 36
-        case "E": seatCount = 32
-        case "F": seatCount = 40
-        default: seatCount = 30
-        }
-        
-        // Define which seats should be unavailable
-        let unavailableSeats: [Int]
-        switch area {
-        case "A": unavailableSeats = [3, 8, 12, 20, 21]
-        case "B": unavailableSeats = [5, 6, 14, 18, 22, 29]
-        case "C": unavailableSeats = [2, 7, 11, 15, 23, 30, 31]
-        case "D": unavailableSeats = [4, 9, 13, 18, 25, 27, 28, 30, 31, 32, 33, 34, 35]
-        case "E": unavailableSeats = [8, 10, 16, 20, 24, 25, 29]
-        case "F": unavailableSeats = [7, 13, 19, 25, 30, 34, 38]
-        default: unavailableSeats = []
-        }
-        
-        var seats = [Seat]()
-        for i in 0..<seatCount {
-            let status: Seat.SeatStatus = unavailableSeats.contains(i) ? .unavailable : .available
-            seats.append(Seat(number: i, areaCode: area, status: status))
-        }
-        
-        return seats
-    }
+//    /// Create fallback seat data if the JSON file can't be loaded
+//    private func createFallbackSeatsData(forArea area: String) -> [Seat] {
+//        // Create a different number of seats based on the area
+//        let seatCount: Int
+//        switch area {
+//        case "A": seatCount = 25
+//        case "B": seatCount = 30
+//        case "C": seatCount = 35
+//        case "D": seatCount = 36
+//        case "E": seatCount = 32
+//        case "F": seatCount = 40
+//        default: seatCount = 30
+//        }
+//        
+//        // Define which seats should be unavailable
+//        let unavailableSeats: [Int]
+//        switch area {
+//        case "A": unavailableSeats = [3, 8, 12, 20, 21]
+//        case "B": unavailableSeats = [5, 6, 14, 18, 22, 29]
+//        case "C": unavailableSeats = [2, 7, 11, 15, 23, 30, 31]
+//        case "D": unavailableSeats = [4, 9, 13, 18, 25, 27, 28, 30, 31, 32, 33, 34, 35]
+//        case "E": unavailableSeats = [8, 10, 16, 20, 24, 25, 29]
+//        case "F": unavailableSeats = [7, 13, 19, 25, 30, 34, 38]
+//        default: unavailableSeats = []
+//        }
+//        
+//        var seats = [Seat]()
+//        for i in 0..<seatCount {
+//            let status: Seat.SeatStatus = unavailableSeats.contains(i) ? .unavailable : .available
+//            seats.append(Seat(number: i, areaCode: area, status: status))
+//        }
+//        
+//        return seats
+//    }
     
     /// Create fallback location data if the JSON file can't be loaded
     private func createFallbackLocationData() -> AustralianLocation {
