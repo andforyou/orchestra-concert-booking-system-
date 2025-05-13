@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct ConcertDetailsView: View {
-    let concert: Concert
-    @State private var navigateToDateSelection = false
-    
+    @EnvironmentObject var concertVM: ConcertViewModel
+    @EnvironmentObject var bookingVM: BookingViewModel
+    @Binding var path: NavigationPath
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -16,21 +17,21 @@ struct ConcertDetailsView: View {
                 
                 VStack(alignment: .leading, spacing: 16) {
                     // Main concert info
-                    Text("\(concert.performerName) performs \(concert.composerName)")
+                    Text("\(concertVM.concert.performerName) performs \(concertVM.concert.composerName)")
                         .font(.headline)
                         .fontWeight(.medium)
                     
-                    Text("\(concert.startDate) – \(concert.endDate)")
+                    Text("\(concertVM.concert.startDate) – \(concertVM.concert.endDate)")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
                     // Concert title and description
-                    Text(concert.title)
+                    Text(concertVM.concert.title)
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding(.top, 4)
                     
-                    Text(concert.description)
+                    Text(concertVM.concert.description)
                         .font(.body)
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -41,7 +42,7 @@ struct ConcertDetailsView: View {
                         .fontWeight(.semibold)
                         .padding(.top, 8)
                     
-                    ForEach(concert.programme, id: \.self) { item in
+                    ForEach(concertVM.concert.programme, id: \.self) { item in
                         HStack(alignment: .top) {
                             Text("•")
                                 .foregroundColor(.secondary)
@@ -56,7 +57,7 @@ struct ConcertDetailsView: View {
                         .fontWeight(.semibold)
                         .padding(.top, 8)
                     
-                    ForEach(concert.artistInfo, id: \.self) { artist in
+                    ForEach(concertVM.concert.artistInfo, id: \.self) { artist in
                         HStack(alignment: .top) {
                             Text("•")
                                 .foregroundColor(.secondary)
@@ -67,7 +68,7 @@ struct ConcertDetailsView: View {
                     
                     // Book button
                     Button(action: {
-                        navigateToDateSelection = true
+                        path.append(BookingRoute.dateSelection)
                     }) {
                         Text("Book")
                             .fontWeight(.semibold)
@@ -85,21 +86,14 @@ struct ConcertDetailsView: View {
         }
         .navigationTitle("Symphonia")
         .navigationBarTitleDisplayMode(.inline)
-        .background(
-            NavigationLink(
-                destination: DateSelectionView(concert: concert),
-                isActive: $navigateToDateSelection,
-                label: { EmptyView() }
-            )
-        )
     }
 }
 
 // Preview
-struct ConcertDetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            ConcertDetailsView(concert: Concert.sampleConcert)
-        }
+#Preview {
+    NavigationStack {
+        ConcertDetailsView(path: .constant(NavigationPath()))
+            .environmentObject(ConcertViewModel())
+            .environmentObject(BookingViewModel())
     }
 }
