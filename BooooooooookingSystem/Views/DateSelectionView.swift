@@ -119,7 +119,11 @@ struct DateSelectionView: View {
 
 extension TimeSlot {
     var isFullyBooked: Bool {
-        seatAreas.allSatisfy { $0.seats.allSatisfy { $0.status == .reserved } }
+        seatAreas.allSatisfy { area in
+            area.seats.allSatisfy { seat in
+                seat.status == .reserved || seat.status == .unavailable
+            }
+        }
     }
 }
 
