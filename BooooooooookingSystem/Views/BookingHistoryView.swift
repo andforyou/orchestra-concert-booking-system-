@@ -27,6 +27,6 @@ struct BookingHistoryView: View {
     }
 
     private func loadBookings() {
-        bookings = DataService.shared.getAllBookings()
+        bookings = DataService.shared.loadBooking()
     }
 }

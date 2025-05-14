@@ -17,7 +17,7 @@ struct ConcertDetailsView: View {
                 
                 VStack(alignment: .leading, spacing: 16) {
                     // Main concert info
-                    Text("\(concertVM.concert.title)")
+                    Text("\(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].title)")
                         .font(.headline)
                         .fontWeight(.medium)
                     

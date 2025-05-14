@@ -41,7 +41,7 @@ struct BookingDetailsView: View {
                     
                     
 
-                    Text("\(concertVM.concert.title)")
+                    Text("\(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].title)")
                         .font(.subheadline)
                     
                     Text(bookingVM.selectedDate?.fullDateString ?? "-")
