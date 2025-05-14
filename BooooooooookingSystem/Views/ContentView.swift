@@ -46,9 +46,12 @@ struct ContentView: View {
 
 #Preview {
     let concertVM = ConcertViewModel()
-    concertVM.concert = .sampleConcert
-    
+    concertVM.concerts = [.sampleConcert] // ✅ Assign array of one
+
+    let bookingVM = BookingViewModel()
+    bookingVM.selectedConcertIndex = 0     // ✅ Point to first (and only) concert
+
     return ContentView()
         .environmentObject(concertVM)
-        .environmentObject(BookingViewModel())
+        .environmentObject(bookingVM)
 }

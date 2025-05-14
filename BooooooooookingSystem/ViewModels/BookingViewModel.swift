@@ -8,6 +8,7 @@
 import Foundation
 
 class BookingViewModel: ObservableObject {
+    @Published var selectedConcertIndex: Int? = nil
     @Published var selectedDate: AvailableDate?
     @Published var selectedTimeSlot: TimeSlot?
     @Published var selectedSeatArea: SeatArea?
