@@ -134,7 +134,7 @@ struct SeatAreaSelectionView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Seat Selection")
+            .navigationTitle("Zone Selection")
             .navigationBarTitleDisplayMode(.inline)
         }
     }

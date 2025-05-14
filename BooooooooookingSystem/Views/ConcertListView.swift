@@ -14,24 +14,27 @@ struct ConcertListView: View {
                 
                 List {
                     ForEach(concertVM.concerts.indices, id: \.self) { index in
-                        NavigationLink(
-                            value: BookingRoute.dateSelection
-                        ) {
+                        Button {
+                            bookingVM.selectedConcertIndex = index
+                            path.append(BookingRoute.concertDetails)
+                        } label: {
                             VStack(alignment: .leading) {
                                 Text(concertVM.concerts[index].title)
                                     .font(.headline)
+                                    .foregroundColor(.primary)
                                 Text(concertVM.concerts[index].description)
                                     .font(.subheadline)
+                                    .foregroundColor(.secondary)
                             }
                         }
-                        .onTapGesture {
-                            bookingVM.selectedConcertIndex = index
-                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
             }
             .navigationDestination(for: BookingRoute.self) { route in
                 switch route {
+                case .concertDetails:
+                    ConcertDetailsView(path: $path)
                 case .dateSelection:
                     DateSelectionView(path: $path)
                 case .seatAreaSelection:
