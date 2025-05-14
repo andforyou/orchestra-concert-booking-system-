@@ -8,10 +8,6 @@ struct ConcertListView: View {
     var body: some View {
         NavigationStack(path: $path) {
             VStack(alignment: .leading) {
-                Text("Available Concerts")
-                    .font(.title)
-                    .padding(.horizontal)
-                
                 List {
                     ForEach(concertVM.concerts.indices, id: \.self) { index in
                         Button {
@@ -31,6 +27,10 @@ struct ConcertListView: View {
                     }
                 }
             }
+            .navigationTitle("Available Concerts")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.purple, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .navigationDestination(for: BookingRoute.self) { route in
                 switch route {
                 case .concertDetails:

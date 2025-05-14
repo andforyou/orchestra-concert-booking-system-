@@ -184,6 +184,8 @@ struct SeatAreaSelectionView: View {
             }
             .navigationTitle("Zone Selection")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.purple, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .onAppear {
                 // Set initial selected area to the first available area
                 if !isAreaAvailable(selectedArea) {

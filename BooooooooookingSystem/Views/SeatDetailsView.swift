@@ -86,6 +86,8 @@ struct SeatDetailsView: View {
         }
         .navigationTitle("Seat Selection")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.purple, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
     }
     
     // Convert Seat.SeatStatus to SeatStatus.Status for compatibility with existing code

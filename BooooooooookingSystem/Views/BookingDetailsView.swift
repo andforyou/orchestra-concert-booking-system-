@@ -270,6 +270,8 @@ struct BookingDetailsView: View {
         }
         .navigationTitle("Booking Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.purple, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
         .alert("Order Confirmed", isPresented: $orderCompleted) {
             Button("OK") {
                 path.removeLast(path.count) // Return to root

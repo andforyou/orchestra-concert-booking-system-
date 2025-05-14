@@ -122,6 +122,8 @@ struct ConcertDetailsView: View {
         }
         .navigationTitle("Concert Details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.purple, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
     }
 }
 

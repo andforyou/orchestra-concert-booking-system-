@@ -20,6 +20,9 @@ struct BookingHistoryView: View {
                 .padding(.vertical, 4)
             }
             .navigationTitle("My Bookings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.purple, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .onAppear {
                 loadBookings()
             }

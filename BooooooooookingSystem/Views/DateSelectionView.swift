@@ -61,6 +61,8 @@ struct DateSelectionView: View {
         }
         .navigationTitle("Concert Date Selection")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Color.purple, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
     }
 
     private var availableDatesByMonth: [String: [Date]] {
