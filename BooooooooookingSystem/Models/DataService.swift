@@ -1,32 +1,69 @@
 import Foundation
 
-/// Service for managing all data operations in the booking system
+// Service for managing all data operations in the booking system
 class DataService {
-    /// Shared instance for singleton access
+    // Shared instance for singleton access
     static let shared = DataService()
     
-    // MARK: - UserDefaults Keys
+    // UserDefaults Keys
     private enum UserDefaultsKeys {
         static let bookings = "bookings"
-        static let seatStatuses = "seatStatuses"
     }
     
-    // MARK: - File Names
+    // File Names
     private enum FileNames {
-        static let availability = "availability"
-        static let seatAreas = "seatAreas"
         static let australianLocations = "australianLocations"
+        static let concerts = "concerts"
         static func seats(forArea area: String) -> String {
             return "seats_\(area)"
         }
     }
     
-    // MARK: - Initialization
+    // Initialization
     
-    /// Private initializer to enforce singleton pattern
+    // Private initializer to enforce singleton pattern
     private init() {}
     
-    // MARK: - Data Loading Methods
+    // Data Loading Methods
+    
+    func loadConcerts() -> [Concert] {
+        let fileURL = concertsFileURL()
+
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            do {
+                let data = try Data(contentsOf: fileURL)
+                return try JSONDecoder().decode([Concert].self, from: data)
+            } catch {
+                print("Failed to decode saved concerts: \(error)")
+            }
+        }
+
+        // Load from bundle as fallback
+        guard let data = loadJsonFileData(named: FileNames.concerts) else {
+            return []
+        }
+
+        do {
+            let concerts = try JSONDecoder().decode([Concert].self, from: data)
+            try data.write(to: fileURL, options: .atomic) // Copy to Documents
+            return concerts
+        } catch {
+            print("Failed to decode fallback concerts: \(error)")
+            return []
+        }
+    }
+    
+    func saveConcerts(_ concerts: [Concert]) {
+        do {
+            let data = try JSONEncoder().encode(concerts)
+            try data.write(to: concertsFileURL(), options: .atomic)
+            print("Concerts saved to Documents.")
+        } catch {
+            print("Failed to save concerts: \(error)")
+        }
+    }
+
+
     
 //    /// Load available dates and time slots from JSON
 //    func loadAvailableDates() -> [AvailableDate] {
@@ -43,21 +80,21 @@ class DataService {
 //        return createFallbackAvailabilityData()
 //    }
     
-    /// Load seat area information from JSON
-    func loadSeatAreas() -> [SeatArea] {
-        // Try to read the JSON file
-        if let data = loadJsonFileData(named: FileNames.seatAreas) {
-            do {
-                return try JSONDecoder().decode([SeatArea].self, from: data)
-            } catch {
-                print("Error decoding seat areas data: \(error)")
-            }
-        }
-        
-        // If data couldn't be loaded, return hardcoded fallback data
-        return [] /*createFallbackSeatAreaData()*/
-    }
-    
+//    /// Load seat area information from JSON
+//    func loadSeatAreas() -> [SeatArea] {
+//        // Try to read the JSON file
+//        if let data = loadJsonFileData(named: FileNames.seatAreas) {
+//            do {
+//                return try JSONDecoder().decode([SeatArea].self, from: data)
+//            } catch {
+//                print("Error decoding seat areas data: \(error)")
+//            }
+//        }
+//        
+//        // If data couldn't be loaded, return hardcoded fallback data
+//        return [] /*createFallbackSeatAreaData()*/
+//    }
+//    
 //    /// Load seats for a specific area from JSON, updating status from UserDefaults
 //    func loadSeats(forArea: String) -> [Seat] {
 //        // Try to read the JSON file
@@ -86,40 +123,21 @@ class DataService {
 //        return createFallbackSeatsData(forArea: forArea)
 //    }
     
-    /// Load Australian location data from JSON
-    func loadAustralianLocations() -> AustralianLocation? {
-        // Try to read the JSON file
-        if let data = loadJsonFileData(named: FileNames.australianLocations) {
-            do {
-                return try JSONDecoder().decode(AustralianLocation.self, from: data)
-            } catch {
-                print("Error decoding Australian locations data: \(error)")
-            }
-        }
-        
-        // If data couldn't be loaded, return hardcoded fallback data
-        return createFallbackLocationData()
-    }
+
     
-    // MARK: - Booking Management
-    
-    /// Save a new booking
+    // Booking Management
+    // Save a new booking
     func saveBooking(_ booking: Booking) {
-        var bookings = getAllBookings()
+        var bookings = loadBooking()
         bookings.append(booking)
         
         if let encodedData = try? JSONEncoder().encode(bookings) {
             UserDefaults.standard.set(encodedData, forKey: UserDefaultsKeys.bookings)
         }
-        
-        // Update seat statuses to reserved
-        for seatNumber in booking.seatNumbers {
-            updateSeatStatus(areaCode: booking.areaCode, seatNumber: seatNumber, status: .reserved)
-        }
     }
     
-    /// Get all saved bookings
-    func getAllBookings() -> [Booking] {
+    // Load all bookings
+    func loadBooking() -> [Booking] {
         guard let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.bookings) else {
             return []
         }
@@ -132,36 +150,36 @@ class DataService {
         }
     }
     
-    // MARK: - Seat Status Management
+    // Seat Status Management
     
-    /// Update the status of a seat
-    func updateSeatStatus(areaCode: String, seatNumber: Int, status: Seat.SeatStatus) {
-        var statusDict = getSavedSeatStatuses() ?? [:]
-        let key = "\(areaCode)_\(seatNumber)"
-        statusDict[key] = status.rawValue
-        
-        if let encodedData = try? JSONEncoder().encode(statusDict) {
-            UserDefaults.standard.set(encodedData, forKey: UserDefaultsKeys.seatStatuses)
-        }
-    }
+//    // Update the status of a seat
+//    func updateSeatStatus(areaCode: String, seatNumber: Int, status: Seat.SeatStatus) {
+//        var statusDict = getSavedSeatStatuses() ?? [:]
+//        let key = "\(areaCode)_\(seatNumber)"
+//        statusDict[key] = status.rawValue
+//        
+//        if let encodedData = try? JSONEncoder().encode(statusDict) {
+//            UserDefaults.standard.set(encodedData, forKey: UserDefaultsKeys.seatStatuses)
+//        }
+//    }
+//    
+//    // Get all saved seat statuses
+//    private func getSavedSeatStatuses() -> [String: String]? {
+//        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.seatStatuses) else {
+//            return nil
+//        }
+//        
+//        do {
+//            return try JSONDecoder().decode([String: String].self, from: data)
+//        } catch {
+//            print("Error decoding seat statuses data: \(error)")
+//            return nil
+//        }
+//    }
     
-    /// Get all saved seat statuses
-    private func getSavedSeatStatuses() -> [String: String]? {
-        guard let data = UserDefaults.standard.data(forKey: UserDefaultsKeys.seatStatuses) else {
-            return nil
-        }
-        
-        do {
-            return try JSONDecoder().decode([String: String].self, from: data)
-        } catch {
-            print("Error decoding seat statuses data: \(error)")
-            return nil
-        }
-    }
+    // Utility Methods
     
-    // MARK: - Utility Methods
-    
-    /// Helper method to load JSON data from a file
+    // Helper method to load JSON data from a file
     private func loadJsonFileData(named filename: String) -> Data? {
         if let path = Bundle.main.path(forResource: filename, ofType: "json") {
             do {
@@ -176,10 +194,9 @@ class DataService {
         return nil
     }
     
-    /// Reset all data (for testing purposes)
+    // Reset all data (for testing purposes)
     func resetAllData() {
         UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.bookings)
-        UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.seatStatuses)
     }
     
     // MARK: - Fallback Data Creation
@@ -301,8 +318,22 @@ class DataService {
 //        
 //        return seats
 //    }
+    // Load Australian location data from JSON
+    func loadAustralianLocations() -> AustralianLocation? {
+        // Try to read the JSON file
+        if let data = loadJsonFileData(named: FileNames.australianLocations) {
+            do {
+                return try JSONDecoder().decode(AustralianLocation.self, from: data)
+            } catch {
+                print("Error decoding Australian locations data: \(error)")
+            }
+        }
+        
+        // If data couldn't be loaded, return hardcoded fallback data
+        return createFallbackLocationData()
+    }
     
-    /// Create fallback location data if the JSON file can't be loaded
+    // Create fallback location data if the JSON file can't be loaded
     private func createFallbackLocationData() -> AustralianLocation {
         return AustralianLocation(states: [
             AustralianState(name: "New South Wales", code: "NSW", postcodeRange: ["2000", "2999"], suburbs: [
@@ -346,5 +377,13 @@ class DataService {
                 Suburb(name: "Palmerston", postcodes: ["0830", "0831"])
             ])
         ])
+    }
+    
+    private func getDocumentsDirectory() -> URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    }
+
+    private func concertsFileURL() -> URL {
+        return getDocumentsDirectory().appendingPathComponent("\(FileNames.concerts).json")
     }
 }
