@@ -9,11 +9,11 @@ struct DateSelectionView: View {
     @State private var selectedTimeSlot: Int = 0
 
     private var availableDates: [Int] {
-        concertVM.concert.availableDates.compactMap { Int($0.date) }
+        concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.compactMap { Int($0.date) }
     }
     
     private var timeSlots: [TimeSlot] {
-        guard let dateObj = concertVM.concert.availableDates.first(where: { Int($0.date) == selectedDate }) else {
+        guard let dateObj = concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.first(where: { Int($0.date) == selectedDate }) else {
             return []
         }
         return dateObj.timeSlots
@@ -23,7 +23,7 @@ struct DateSelectionView: View {
         VStack(spacing: 20) {
             // Calendar view
             calendarSection
-//            
+//
 //            // Time slot selection
             timeSlotSection
             
@@ -31,7 +31,7 @@ struct DateSelectionView: View {
             
             // Next button
             Button(action: {
-                guard let dateObj = concertVM.concert.availableDates.first(where: { Int($0.date) == selectedDate })
+                guard let dateObj = concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.first(where: { Int($0.date) == selectedDate })
                 else { return }
                 let selectedSlot = dateObj.timeSlots[selectedTimeSlot]
 
@@ -54,8 +54,8 @@ struct DateSelectionView: View {
         .navigationTitle("Concert Date Selection")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            print("Available Dates Count: \(concertVM.concert.availableDates.count)")
-            if let first = concertVM.concert.availableDates.first {
+            print("Available Dates Count: \(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.count)")
+            if let first = concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.first {
                 print("First date: \(first.date), TimeSlots: \(first.timeSlots.count)")
             } else {
                 print("⚠️ No available dates!")

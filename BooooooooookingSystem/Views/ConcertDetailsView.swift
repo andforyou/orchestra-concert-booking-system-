@@ -17,21 +17,21 @@ struct ConcertDetailsView: View {
                 
                 VStack(alignment: .leading, spacing: 16) {
                     // Main concert info
-                    Text("\(concertVM.concert.performerName) performs \(concertVM.concert.composerName)")
+                    Text("\(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].performerName) performs \(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].composerName)")
                         .font(.headline)
                         .fontWeight(.medium)
                     
-                    Text("\(concertVM.concert.startDate) – \(concertVM.concert.endDate)")
+                    Text("\(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].startDate) – \(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].endDate)")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
                     // Concert title and description
-                    Text(concertVM.concert.title)
+                    Text(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].title)
                         .font(.title2)
                         .fontWeight(.bold)
                         .padding(.top, 4)
                     
-                    Text(concertVM.concert.description)
+                    Text(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].description)
                         .font(.body)
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -42,7 +42,7 @@ struct ConcertDetailsView: View {
                         .fontWeight(.semibold)
                         .padding(.top, 8)
                     
-                    ForEach(concertVM.concert.programme, id: \.self) { item in
+                    ForEach(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].programme, id: \.self) { item in
                         HStack(alignment: .top) {
                             Text("•")
                                 .foregroundColor(.secondary)
@@ -57,7 +57,7 @@ struct ConcertDetailsView: View {
                         .fontWeight(.semibold)
                         .padding(.top, 8)
                     
-                    ForEach(concertVM.concert.artistInfo, id: \.self) { artist in
+                    ForEach(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].artistInfo, id: \.self) { artist in
                         HStack(alignment: .top) {
                             Text("•")
                                 .foregroundColor(.secondary)
