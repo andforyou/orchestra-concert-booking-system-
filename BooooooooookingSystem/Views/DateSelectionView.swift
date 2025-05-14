@@ -135,7 +135,7 @@ struct CalendarMonthView: View {
             let gridItems = Array(repeating: GridItem(.flexible()), count: 7)
 
             LazyVGrid(columns: gridItems, spacing: 8) {
-                ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \ .self) { day in
+                ForEach(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], id: \ .self) { day in
                     Text(day)
                         .font(.caption)
                         .frame(maxWidth: .infinity)
