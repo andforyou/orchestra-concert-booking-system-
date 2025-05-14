@@ -73,15 +73,6 @@ struct DateSelectionView: View {
                 Spacer()
                 
                 HStack(spacing: 20) {
-                    Button(action: {}) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.gray)
-                    }
-                    
-                    Button(action: {}) {
-                        Image(systemName: "chevron.right")
-                            .foregroundColor(.gray)
-                    }
                 }
                 .padding(.trailing, 8)
             }
@@ -97,61 +88,71 @@ struct DateSelectionView: View {
             .padding(.horizontal, 4)
             .padding(.top, 4)
             
-            // Calendar grid (simplified for August 2025)
+            // Calendar grid for August 2025
             Group {
-                // Week 1 (empty space + 1-5)
+                // Week 1: August 1 is a Friday in 2025
                 HStack {
-                    Text("") // Empty space for Sunday
-                        .frame(maxWidth: .infinity)
+                    // Empty spaces for Sunday through Thursday
+                    ForEach(0..<5) { _ in
+                        Text("")
+                            .frame(maxWidth: .infinity)
+                    }
                     
-                    ForEach(1..<6) { day in
+                    // Friday (1) and Saturday (2)
+                    ForEach(1..<3) { day in
                         Text("\(day)")
                             .frame(maxWidth: .infinity)
                             .foregroundColor(.primary)
                     }
                 }
                 
-                // Week 2 (6-12)
+                // Week 2 (3-9)
                 HStack {
-                    ForEach(6..<13) { day in
+                    ForEach(3..<10) { day in
                         Text("\(day)")
                             .frame(maxWidth: .infinity)
                             .foregroundColor(.primary)
                     }
                 }
                 
-                // Week 3 (13-19) - Contains selectable concert dates
+                // Week 3 (10-16)
                 HStack {
-                    ForEach(13..<20) { day in
+                    ForEach(10..<17) { day in
+                        Text("\(day)")
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(.primary)
+                    }
+                }
+                
+                // Week 4 (17-23) - Contains selectable concert dates
+                HStack {
+                    ForEach(17..<24) { day in
                         calendarDay(day)
                     }
                 }
                 
-                // Week 4 (20-26)
+                // Week 5 (24-30)
                 HStack {
-                    ForEach(20..<27) { day in
+                    ForEach(24..<31) { day in
                         Text("\(day)")
                             .frame(maxWidth: .infinity)
                             .foregroundColor(.primary)
                     }
                 }
                 
-                // Week 5 (27-31 + empty spaces)
+                // Week 6 (31 + empty spaces)
                 HStack {
-                    ForEach(27..<32) { day in
-                        Text("\(day)")
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(.primary)
-                    }
+                    Text("31")
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.primary)
                     
                     // Empty spaces for the rest of the week
-                    ForEach(0..<2) { _ in
+                    ForEach(0..<6) { _ in
                         Text("")
                             .frame(maxWidth: .infinity)
                     }
                 }
             }
-            
             HStack {
                 Spacer()
             }
