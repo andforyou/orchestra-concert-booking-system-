@@ -84,7 +84,7 @@ struct ConcertDetailsView: View {
                 .padding(.bottom, 24)
             }
         }
-        .navigationTitle("Symphonia")
+        .navigationTitle("Concert Details")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

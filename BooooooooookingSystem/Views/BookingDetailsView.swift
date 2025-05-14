@@ -38,8 +38,7 @@ struct BookingDetailsView: View {
             VStack(alignment: .leading, spacing: 20) {
                 // Concert details summary
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Concert details")
-                        .font(.headline)
+                    
                     
                     Text("\(concertVM.concert.performerName) performs \(concertVM.concert.composerName)")
                         .font(.subheadline)
@@ -268,7 +267,7 @@ struct BookingDetailsView: View {
             }
             .padding()
         }
-        .navigationTitle("Symphonia")
+        .navigationTitle("Booking Details")
         .navigationBarTitleDisplayMode(.inline)
         .alert("Order Confirmed", isPresented: $orderCompleted) {
             Button("OK") {

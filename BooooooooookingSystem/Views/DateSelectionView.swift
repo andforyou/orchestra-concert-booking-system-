@@ -51,7 +51,7 @@ struct DateSelectionView: View {
             .padding(.horizontal)
             .padding(.bottom, 16)
         }
-        .navigationTitle("Symphonia")
+        .navigationTitle("Concert Date Selection")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             print("Available Dates Count: \(concertVM.concert.availableDates.count)")
