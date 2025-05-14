@@ -15,9 +15,9 @@ struct ConcertListView: View {
                 List {
                     NavigationLink(value: BookingRoute.dateSelection) {
                         VStack(alignment: .leading) {
-                            Text(concertVM.concert.title)
+                            Text("\(concertVM.concert.title)")
                                 .font(.headline)
-                            Text("\(concertVM.concert.performerName) performs \(concertVM.concert.composerName)")
+                            Text("\(concertVM.concert.description)")
                                 .font(.subheadline)
                         }
                     }
