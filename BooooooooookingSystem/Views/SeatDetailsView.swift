@@ -138,28 +138,28 @@ struct SeatDetailsView: View {
         case "A":
             Rectangle()
                 .fill(Color.purple)
-                .frame(width: 280, height: 240)
+                .frame(width: 320, height: 240)
                 .cornerRadius(8)
         case "B":
             Rectangle()
                 .fill(Color.purple)
-                .frame(width: 300, height: 260)
+                .frame(width: 320, height: 230)
                 .cornerRadius(8)
         case "C":
             Rectangle()
                 .fill(Color.purple)
-                .frame(width: 320, height: 280)
+                .frame(width: 320, height: 220)
                 .cornerRadius(8)
         case "D":
-            // Trapezoid shape for side sections
-            Trapezoid(invert: false)
+            Rectangle()
                 .fill(Color.purple)
-                .frame(width: 280, height: 360)
+                .frame(width: 300, height: 400)
+                .cornerRadius(8)
         case "E":
-            // Trapezoid shape for side sections (inverted)
-            Trapezoid(invert: true)
+            Rectangle()
                 .fill(Color.purple)
-                .frame(width: 280, height: 360)
+                .frame(width: 300, height: 400)
+                .cornerRadius(8)
         case "F":
             // Wide rectangle for rear section
             Rectangle()
