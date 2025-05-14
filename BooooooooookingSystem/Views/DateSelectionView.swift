@@ -5,33 +5,41 @@ struct DateSelectionView: View {
     @EnvironmentObject var bookingVM: BookingViewModel
     @Binding var path: NavigationPath
 
-    @State private var selectedDate: Int = 17
+    @State private var selectedDate: Int? = nil
     @State private var selectedTimeSlot: Int = 0
 
-    private var availableDates: [Int] {
-        concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.compactMap { Int($0.date) }
+    private var availableDates: [Date] {
+        concertVM
+            .concerts[bookingVM.selectedConcertIndex ?? 0]
+            .availableDates
+            .filter { date in
+                date.timeSlots.contains(where: { !$0.isFullyBooked })
+            }
+            .compactMap { date -> Date? in
+                let formatter = DateFormatter()
+                formatter.dateFormat = "d MMMM yyyy"
+                return formatter.date(from: "\(date.date) \(date.month) \(date.year)")
+            }
     }
-    
+
     private var timeSlots: [TimeSlot] {
-        guard let dateObj = concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.first(where: { Int($0.date) == selectedDate }) else {
+        guard let selectedDate = selectedDate,
+              let dateObj = concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.first(where: { Int($0.date) == selectedDate }) else {
             return []
         }
         return dateObj.timeSlots
     }
-    
+
     var body: some View {
         VStack(spacing: 20) {
-            // Calendar view
             calendarSection
-//
-//            // Time slot selection
             timeSlotSection
-            
+
             Spacer()
-            
-            // Next button
+
             Button(action: {
-                guard let dateObj = concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.first(where: { Int($0.date) == selectedDate })
+                guard let selectedDate = selectedDate,
+                      let dateObj = concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.first(where: { Int($0.date) == selectedDate })
                 else { return }
                 let selectedSlot = dateObj.timeSlots[selectedTimeSlot]
 
@@ -53,120 +61,32 @@ struct DateSelectionView: View {
         }
         .navigationTitle("Concert Date Selection")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            print("Available Dates Count: \(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.count)")
-            if let first = concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].availableDates.first {
-                print("First date: \(first.date), TimeSlots: \(first.timeSlots.count)")
-            } else {
-                print("⚠️ No available dates!")
-            }
+    }
+
+    private var availableDatesByMonth: [String: [Date]] {
+        Dictionary(grouping: availableDates) { date in
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMMM yyyy"
+            return formatter.string(from: date)
         }
     }
-    
+
     private var calendarSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("August 2025")
-                    .font(.headline)
-                    .padding(.leading, 8)
-                
-                Spacer()
-                
-                HStack(spacing: 20) {
-                }
-                .padding(.trailing, 8)
+        VStack(spacing: 16) {
+            ForEach(availableDatesByMonth.keys.sorted(), id: \ .self) { monthKey in
+                let datesInMonth = availableDatesByMonth[monthKey] ?? []
+                let monthDate = datesInMonth.first ?? Date()
+                CalendarMonthView(month: monthDate, availableDates: datesInMonth, selectedDate: $selectedDate)
             }
-            
-            // Calendar days header
-            HStack {
-                ForEach(["S", "M", "T", "W", "T", "F", "S"], id: \.self) { day in
-                    Text(day)
-                        .font(.caption)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .padding(.horizontal, 4)
-            .padding(.top, 4)
-            
-            // Calendar grid for August 2025
-            Group {
-                // Week 1: August 1 is a Friday in 2025
-                HStack {
-                    // Empty spaces for Sunday through Thursday
-                    ForEach(0..<5) { _ in
-                        Text("")
-                            .frame(maxWidth: .infinity)
-                    }
-                    
-                    // Friday (1) and Saturday (2)
-                    ForEach(1..<3) { day in
-                        Text("\(day)")
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(.primary)
-                    }
-                }
-                
-                // Week 2 (3-9)
-                HStack {
-                    ForEach(3..<10) { day in
-                        Text("\(day)")
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(.primary)
-                    }
-                }
-                
-                // Week 3 (10-16)
-                HStack {
-                    ForEach(10..<17) { day in
-                        Text("\(day)")
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(.primary)
-                    }
-                }
-                
-                // Week 4 (17-23) - Contains selectable concert dates
-                HStack {
-                    ForEach(17..<24) { day in
-                        calendarDay(day)
-                    }
-                }
-                
-                // Week 5 (24-30)
-                HStack {
-                    ForEach(24..<31) { day in
-                        Text("\(day)")
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(.primary)
-                    }
-                }
-                
-                // Week 6 (31 + empty spaces)
-                HStack {
-                    Text("31")
-                        .frame(maxWidth: .infinity)
-                        .foregroundColor(.primary)
-                    
-                    // Empty spaces for the rest of the week
-                    ForEach(0..<6) { _ in
-                        Text("")
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-            }
-            HStack {
-                Spacer()
-            }
-            .padding(.top, 8)
         }
-        .padding()
-        .background(Color.purple.opacity(0.1))
-        .cornerRadius(20)
     }
-    
+
     private var timeSlotSection: some View {
         VStack(spacing: 16) {
-            ForEach(0..<timeSlots.count, id: \.self) { index in
-                let slot = timeSlots [index]
+            ForEach(0..<timeSlots.count, id: \ .self) { index in
+                let slot = timeSlots[index]
+                let disabled = slot.isFullyBooked
+
                 Button(action: {
                     selectedTimeSlot = index
                 }) {
@@ -176,46 +96,95 @@ struct DateSelectionView: View {
                             .frame(width: 20, height: 20)
                             .overlay(
                                 Circle()
-                                    .stroke(Color.purple, lineWidth: 1.5)
+                                    .stroke(disabled ? Color.gray : Color.purple, lineWidth: 1.5)
                             )
-                        
+
                         Text(slot.displayString)
-                            .foregroundColor(selectedTimeSlot == index ? .primary : .gray)
+                            .foregroundColor(disabled ? .gray : (selectedTimeSlot == index ? .primary : .gray))
                             .padding(.leading, 8)
-                        
+
                         Spacer()
                     }
                     .padding(.vertical, 8)
                 }
+                .disabled(disabled)
                 .buttonStyle(PlainButtonStyle())
             }
         }
         .padding(.horizontal)
     }
-    
-    // Custom calendar day view
-    private func calendarDay(_ day: Int) -> some View {
-        ZStack {
-            if availableDates.contains(day) {
-                Circle()
-                    .fill(selectedDate == day ? Color.purple : Color.clear)
-                    .frame(width: 36, height: 36)
-                
-                if selectedDate != day {
-                    Circle()
-                        .stroke(Color.purple, lineWidth: 1.5)
-                        .frame(width: 36, height: 36)
+}
+
+extension TimeSlot {
+    var isFullyBooked: Bool {
+        seatAreas.allSatisfy { $0.seats.allSatisfy { $0.status == .reserved } }
+    }
+}
+
+struct CalendarMonthView: View {
+    let month: Date
+    let availableDates: [Date]
+    @Binding var selectedDate: Int?
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(month, formatter: monthFormatter)
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            let gridItems = Array(repeating: GridItem(.flexible()), count: 7)
+
+            LazyVGrid(columns: gridItems, spacing: 8) {
+                ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \ .self) { day in
+                    Text(day)
+                        .font(.caption)
+                        .frame(maxWidth: .infinity)
+                        .multilineTextAlignment(.center)
+                }
+
+                ForEach(daysInMonth(for: month), id: \ .self) { date in
+                    let isAvailable = availableDates.contains(where: { Calendar.current.isDate($0, inSameDayAs: date) })
+                    let isSelected = selectedDate.map { Calendar.current.component(.day, from: date) == $0 } ?? false
+
+                    ZStack {
+                        if isAvailable {
+                            Circle()
+                                .fill(isSelected ? Color.purple : Color.clear)
+                                .frame(width: 30, height: 30)
+                                .overlay(Circle().stroke(Color.purple, lineWidth: isSelected ? 0 : 1.5))
+                        }
+
+                        Text("\(Calendar.current.component(.day, from: date))")
+                            .foregroundColor(isAvailable ? (isSelected ? .white : .purple) : .primary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .onTapGesture {
+                        if isAvailable {
+                            selectedDate = Calendar.current.component(.day, from: date)
+                        }
+                    }
                 }
             }
-            
-            Text("\(day)")
-                .foregroundColor(selectedDate == day ? .white : availableDates.contains(day) ? .purple : .primary)
         }
-        .frame(maxWidth: .infinity)
-        .onTapGesture {
-            if availableDates.contains(day) {
-                selectedDate = day
-            }
+        .padding()
+        .background(Color.purple.opacity(0.05))
+        .cornerRadius(16)
+    }
+
+    private var monthFormatter: DateFormatter {
+        let f = DateFormatter()
+        f.dateFormat = "MMMM yyyy"
+        return f
+    }
+
+    private func daysInMonth(for date: Date) -> [Date] {
+        let calendar = Calendar.current
+        guard let range = calendar.range(of: .day, in: .month, for: date),
+              let firstOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: date))
+        else { return [] }
+
+        return range.compactMap { day in
+            calendar.date(byAdding: .day, value: day - 1, to: firstOfMonth)
         }
     }
 }
