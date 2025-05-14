@@ -5,6 +5,30 @@ struct ConcertDetailsView: View {
     @EnvironmentObject var bookingVM: BookingViewModel
     @Binding var path: NavigationPath
 
+    // Check if the concert has any available seats across all dates and time slots
+    private var hasAvailableSeats: Bool {
+        guard let concertIndex = bookingVM.selectedConcertIndex else { return false }
+        
+        let concert = concertVM.concerts[concertIndex]
+        
+        // Check each date
+        for date in concert.availableDates {
+            // Check each time slot
+            for timeSlot in date.timeSlots {
+                // Check each seat area
+                for area in timeSlot.seatAreas {
+                    // If any seat is available, return true
+                    if area.seats.contains(where: { $0.status == .available }) {
+                        return true
+                    }
+                }
+            }
+        }
+        
+        // If we got here, no available seats were found
+        return false
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
@@ -66,19 +90,31 @@ struct ConcertDetailsView: View {
                         }
                     }
                     
-                    // Book button
+                    // Book button / Sold Out when fully booked
                     Button(action: {
-                        path.append(BookingRoute.dateSelection)
+                        if hasAvailableSeats {
+                            path.append(BookingRoute.dateSelection)
+                        }
                     }) {
-                        Text("Book")
+                        Text(hasAvailableSeats ? "Book" : "Sold Out")
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.purple)
+                            .background(hasAvailableSeats ? Color.purple : Color.gray)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
+                    .disabled(!hasAvailableSeats)
                     .padding(.top, 20)
+                    
+                    // Optional: Show sold out message
+                    if !hasAvailableSeats {
+                        Text("All performances for this concert are fully booked.")
+                            .font(.subheadline)
+                            .foregroundColor(.red)
+                            .padding(.top, 8)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 24)

@@ -17,6 +17,14 @@ struct SeatAreaSelectionView: View {
         seatAreas.first(where: { $0.code == selectedArea })
     }
     
+    // Check if an area has any available seats
+    private func isAreaAvailable(_ areaCode: String) -> Bool {
+        guard let area = seatAreas.first(where: { $0.code == areaCode }) else {
+            return false
+        }
+        return area.seats.contains(where: { $0.status == .available })
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
@@ -27,33 +35,63 @@ struct SeatAreaSelectionView: View {
                             // Seating areas
                             VStack(spacing: 0) {
                                 // Area F - sized to match the total width of areas below
-                                AreaView(areaName: "F", isSelected: selectedArea == "F", action: { selectedArea = "F" })
-                                    .frame(width: 310, height: 100)
+                                AreaView(
+                                    areaName: "F",
+                                    isSelected: selectedArea == "F",
+                                    isDisabled: !isAreaAvailable("F"),
+                                    action: { selectedArea = "F" }
+                                )
+                                .frame(width: 310, height: 100)
                                 
                                 HStack(spacing: 0) {
                                     // Area D (Left side)
-                                    AreaView(areaName: "D", isSelected: selectedArea == "D", action: { selectedArea = "D" })
-                                        .frame(width: 80, height: 200)
+                                    AreaView(
+                                        areaName: "D",
+                                        isSelected: selectedArea == "D",
+                                        isDisabled: !isAreaAvailable("D"),
+                                        action: { selectedArea = "D" }
+                                    )
+                                    .frame(width: 80, height: 200)
                                     
                                     // Central sections
                                     VStack(spacing: 0) {
                                         // Area C
-                                        AreaView(areaName: "C", isSelected: selectedArea == "C", action: { selectedArea = "C" })
-                                            .frame(height: 60)
+                                        AreaView(
+                                            areaName: "C",
+                                            isSelected: selectedArea == "C",
+                                            isDisabled: !isAreaAvailable("C"),
+                                            action: { selectedArea = "C" }
+                                        )
+                                        .frame(height: 60)
                                         
                                         // Area B
-                                        AreaView(areaName: "B", isSelected: selectedArea == "B", action: { selectedArea = "B" })
-                                            .frame(height: 60)
+                                        AreaView(
+                                            areaName: "B",
+                                            isSelected: selectedArea == "B",
+                                            isDisabled: !isAreaAvailable("B"),
+                                            action: { selectedArea = "B" }
+                                        )
+                                        .frame(height: 60)
                                         
                                         // Area A
-                                        AreaView(areaName: "A", isSelected: selectedArea == "A", action: { selectedArea = "A" })
-                                            .frame(height: 80)
+                                        AreaView(
+                                            areaName: "A",
+                                            isSelected: selectedArea == "A",
+                                            isDisabled: !isAreaAvailable("A"),
+                                            action: { selectedArea = "A" }
+                                        )
+                                        .frame(height: 80)
                                     }
                                     .frame(width: 150)
                                     
                                     // Area E (Right side)
-                                    AreaView(areaName: "E", isSelected: selectedArea == "E", action: { selectedArea = "E" })
-                                        .frame(width: 80, height: 200)
+                                    AreaView(
+                                        areaName: "E",
+                                        isSelected: selectedArea == "E",
+                                        isDisabled: !isAreaAvailable("E"),
+                                        action: { selectedArea = "E" }
+                                    )
+                                    .frame(width: 80, height: 200)
                                 }
                                 
                                 // Stage - positioned below area A with enough space to avoid overlap
@@ -66,6 +104,15 @@ struct SeatAreaSelectionView: View {
                         // Area Information
                         VStack(alignment: .leading, spacing: 3) {
                             if let info = selectedAreaInfo {
+                                // Availability status
+                                if !isAreaAvailable(selectedArea) {
+                                    Text("This zone is fully booked")
+                                        .font(.headline)
+                                        .foregroundColor(.red)
+                                        .padding(.top, 8)
+                                        .frame(maxWidth: .infinity, alignment: .center)
+                                }
+                                
                                 // Pros
                                 Text("Pros:")
                                     .font(.headline)
@@ -132,37 +179,81 @@ struct SeatAreaSelectionView: View {
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
+                .disabled(!isAreaAvailable(selectedArea))
                 .padding()
             }
             .navigationTitle("Zone Selection")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                // Set initial selected area to the first available area
+                if !isAreaAvailable(selectedArea) {
+                    for area in ["A", "B", "C", "D", "E", "F"] {
+                        if isAreaAvailable(area) {
+                            selectedArea = area
+                            break
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
-// Keep the rest of the code the same
+// Updated AreaView to include disabled state
 struct AreaView: View {
     let areaName: String
     let isSelected: Bool
+    let isDisabled: Bool
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             ZStack {
                 Rectangle()
-                    .fill(isSelected ? Color.purple : Color.purple.opacity(0.3))
-                    .border(Color.purple, width: 1)
+                    .fill(backgroundColor)
+                    .border(Color.purple, width: isDisabled ? 0 : 1)
                 
                 Text(areaName)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(isSelected ? .white : .purple)
+                    .foregroundColor(textColor)
+                
+                if isDisabled {
+                    Text("Fully Booked")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                        .padding(4)
+                        .background(Color.red.opacity(0.7))
+                        .cornerRadius(4)
+                        .offset(y: 15)
+                }
             }
+        }
+        .disabled(isDisabled)
+    }
+    
+    private var backgroundColor: Color {
+        if isDisabled {
+            return Color.gray.opacity(0.5)
+        } else if isSelected {
+            return Color.purple
+        } else {
+            return Color.purple.opacity(0.3)
+        }
+    }
+    
+    private var textColor: Color {
+        if isDisabled {
+            return Color.white.opacity(0.7)
+        } else if isSelected {
+            return .white
+        } else {
+            return .purple
         }
     }
 }
 
-// Stage View Component
+// Leave the rest of the code the same
 struct StageView: View {
     var body: some View {
         ZStack {
@@ -178,7 +269,6 @@ struct StageView: View {
     }
 }
 
-// Custom Arc Shape for Stage
 struct Arc: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
@@ -192,13 +282,5 @@ struct Arc: Shape {
                     clockwise: false)
         
         return path
-    }
-}
-
-#Preview {
-    NavigationStack {
-        SeatAreaSelectionView(path: .constant(NavigationPath()))
-            .environmentObject(ConcertViewModel())
-            .environmentObject(BookingViewModel())
     }
 }
