@@ -13,12 +13,19 @@ struct ConcertListView: View {
                     .padding(.horizontal)
                 
                 List {
-                    NavigationLink(value: BookingRoute.dateSelection) {
-                        VStack(alignment: .leading) {
-                            Text("\(concertVM.concert.title)")
-                                .font(.headline)
-                            Text("\(concertVM.concert.description)")
-                                .font(.subheadline)
+                    ForEach(concertVM.concerts.indices, id: \.self) { index in
+                        NavigationLink(
+                            value: BookingRoute.dateSelection
+                        ) {
+                            VStack(alignment: .leading) {
+                                Text(concertVM.concerts[index].title)
+                                    .font(.headline)
+                                Text(concertVM.concerts[index].description)
+                                    .font(.subheadline)
+                            }
+                        }
+                        .onTapGesture {
+                            bookingVM.selectedConcertIndex = index
                         }
                     }
                 }
