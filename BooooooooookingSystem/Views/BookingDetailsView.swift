@@ -40,6 +40,7 @@ struct BookingDetailsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     
                     
+
                     Text("\(concertVM.concert.title)")
                         .font(.subheadline)
                     
@@ -325,13 +326,21 @@ struct BookingDetailsView: View {
         )
         bookingVM.customer = customer
         
+        guard let concertIndex = bookingVM.selectedConcertIndex,
+              let selectedDate = bookingVM.selectedDate,
+              let selectedTimeSlot = bookingVM.selectedTimeSlot
+        else { return }
+        
+        let concert = concertVM.concerts[concertIndex]
+        
         // Create booking
-        if let booking = bookingVM.generateBooking(concert: concertVM.concert) {
+        if let booking = bookingVM.generateBooking(concert: concert) {
             concertVM.updateSeatStatus(
-                on: bookingVM.selectedDate!,
-                timeSlot: bookingVM.selectedTimeSlot!,
+                concertID: concert.id,
+                dateID: selectedDate.id,
+                timeSlotID: selectedTimeSlot.id,
                 areaCode: booking.areaCode,
-                seats: booking.seatNumbers,
+                seatNumbers: booking.seatNumbers,
                 to: .reserved
             )
             // Save booking to DataService
