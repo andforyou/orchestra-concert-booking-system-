@@ -1,12 +1,9 @@
 import SwiftUI
 
-struct OrderDetailsView: View {
-    let concert: Concert
-    let selectedDate: Int
-    let selectedTimeSlot: Int
-    let selectedArea: String
-    let selectedSeats: Set<Int>
-    let totalPrice: Int
+struct BookingDetailsView: View {
+    @EnvironmentObject var concertVM: ConcertViewModel
+    @EnvironmentObject var bookingVM: BookingViewModel
+    @Binding var path: NavigationPath
     
     @Environment(\.dismiss) private var dismiss
     @State private var name: String = ""
@@ -44,26 +41,26 @@ struct OrderDetailsView: View {
                     Text("Concert details")
                         .font(.headline)
                     
-                    Text("\(concert.performerName) performs \(concert.composerName)")
+                    Text("\(concertVM.concert.performerName) performs \(concertVM.concert.composerName)")
                         .font(.subheadline)
                     
-                    Text("\(selectedDate)th August")
+                    Text(bookingVM.selectedDate?.fullDateString ?? "-")
                         .font(.subheadline)
                     
-                    Text(timeSlots[selectedTimeSlot])
+                    Text(bookingVM.selectedTimeSlot?.displayString ?? "-")
                         .font(.subheadline)
                     
-                    Text("\(selectedSeats.count) Seats")
+                    Text("\(bookingVM.selectedSeats.count) Seats in Area \(bookingVM.selectedSeatArea?.code ?? "-")")
                         .font(.subheadline)
                     
-                    Text("\(selectedArea) Area")
+                    Text("\(bookingVM.selectedSeatArea?.code ?? "-") Area")
                         .font(.subheadline)
                 }
                 
                 Divider()
                 
                 // Total price
-                Text("Total: $\(totalPrice)")
+                Text("Total: $\(bookingVM.selectedSeatArea?.price ?? 0 * bookingVM.selectedSeats.count)")
                     .font(.title2)
                     .fontWeight(.semibold)
                     .foregroundColor(.purple)
@@ -273,12 +270,9 @@ struct OrderDetailsView: View {
         }
         .navigationTitle("Symphonia")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .navigationBarItems(leading: customBackButton)
         .alert("Order Confirmed", isPresented: $orderCompleted) {
             Button("OK") {
-                // Navigate back to the root view (concert details)
-                navigateToRoot()
+                path.removeLast(path.count) // Return to root
             }
         } message: {
             Text("Thank you for your order! Your tickets have been reserved.")
@@ -292,19 +286,6 @@ struct OrderDetailsView: View {
     // Load Australian location data
     private func loadLocationData() {
         locationData = DataService.shared.loadAustralianLocations()
-    }
-    
-    // Custom back button
-    private var customBackButton: some View {
-        Button(action: {
-            dismiss()
-        }) {
-            HStack {
-                Image(systemName: "chevron.left")
-                Text("Back")
-            }
-            .foregroundColor(.purple)
-        }
     }
     
     // Form validation
@@ -334,7 +315,7 @@ struct OrderDetailsView: View {
     // Function to confirm order
     private func confirmOrder() {
         // Create customer info
-        let customerInfo = CustomerInfo(
+        let customer = Customer(
             name: name,
             email: email,
             phone: phone,
@@ -343,41 +324,24 @@ struct OrderDetailsView: View {
             state: state,
             postcode: postCode
         )
+        bookingVM.customer = customer
         
         // Create booking
-        let booking = Booking(
-            date: String(selectedDate),
-            month: "August",
-            year: "2025",
-            timeSlot: timeSlots[selectedTimeSlot],
-            areaCode: selectedArea,
-            seatNumbers: Array(selectedSeats),
-            totalPrice: totalPrice,
-            customerInfo: customerInfo
-        )
-        
-        // Save booking to DataService
-        DataService.shared.saveBooking(booking)
-        
-        // Update seat statuses to reserved
-        for seatNumber in selectedSeats {
-            DataService.shared.updateSeatStatus(
-                areaCode: selectedArea,
-                seatNumber: seatNumber,
-                status: .reserved
+        if let booking = bookingVM.generateBooking(concert: concertVM.concert) {
+            concertVM.updateSeatStatus(
+                on: bookingVM.selectedDate!,
+                timeSlot: bookingVM.selectedTimeSlot!,
+                areaCode: booking.areaCode,
+                seats: booking.seatNumbers,
+                to: .reserved
             )
+            // Save booking to DataService
+            DataService.shared.saveBooking(booking)
+            bookingVM.reset()
+            
+            // Show completion alert
+            orderCompleted = true
         }
-        
-        // Show completion alert
-        orderCompleted = true
-    }
-    
-    // Navigate back to the root view (concert details)
-    private func navigateToRoot() {
-        // This is a simplified approach - in a real app you might use a more sophisticated navigation mechanism
-        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-        let window = windowScene?.windows.first
-        window?.rootViewController?.dismiss(animated: true)
     }
     
     // Get Australian states from location data
@@ -457,17 +421,10 @@ struct OrderDetailsView: View {
     }
 }
 
-struct OrderDetailsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            OrderDetailsView(
-                concert: Concert.sampleConcert,
-                selectedDate: 17,
-                selectedTimeSlot: 0,
-                selectedArea: "D",
-                selectedSeats: Set([1, 2]),
-                totalPrice: 400
-            )
-        }
+#Preview {
+    NavigationStack {
+        BookingDetailsView(path: .constant(NavigationPath()))
+            .environmentObject(ConcertViewModel())
+            .environmentObject(BookingViewModel())
     }
 }

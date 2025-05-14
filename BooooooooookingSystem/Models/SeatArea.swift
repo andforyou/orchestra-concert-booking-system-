@@ -6,27 +6,31 @@ struct SeatArea: Codable, Identifiable {
     var id = UUID()
     
     /// The area code (e.g., "A", "B", "C", etc.)
-    let code: String
+    var code: String
     
     /// The price per seat in this area
-    let price: Int
+    var price: Int
     
     /// List of advantages for this seating area
-    let pros: [String]
+    var pros: [String]
     
     /// List of disadvantages for this seating area
-    let cons: [String]
+    var cons: [String]
+    
+    /// List of seats within this area
+    var seats: [Seat]
     
     /// Initialize a new seat area with the given details
-    init(code: String, price: Int, pros: [String], cons: [String]) {
+    init(code: String, price: Int, pros: [String], cons: [String], seats: [Seat]) {
         self.code = code
         self.price = price
         self.pros = pros
         self.cons = cons
+        self.seats = seats
     }
     
     /// Coding keys for encoding and decoding
     enum CodingKeys: String, CodingKey {
-        case code, price, pros, cons
+        case code, price, pros, cons, seats
     }
 }

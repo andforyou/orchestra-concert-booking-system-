@@ -1,23 +1,20 @@
 import SwiftUI
 
 struct SeatAreaSelectionView: View {
-    let concert: Concert
-    let selectedDate: Int
-    let selectedTimeSlot: Int
-    
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedArea: String = "D" // Default to area D selected
-    @State private var navigateToSeatDetails = false
-    
-    // Load seat area data from DataService
-    @State private var seatAreas: [SeatArea] = []
-    
-    // Computed property to get area info for the selected area
-    private var selectedAreaInfo: (price: Int, pros: [String], cons: [String])? {
-        if let area = seatAreas.first(where: { $0.code == selectedArea }) {
-            return (price: area.price, pros: area.pros, cons: area.cons)
-        }
-        return nil
+    @EnvironmentObject var concertVM: ConcertViewModel
+    @EnvironmentObject var bookingVM: BookingViewModel
+    @Binding var path: NavigationPath
+
+    @State private var selectedArea: String = "D" // Default area selection
+
+    // Computed: All areas from the selected time slot
+    private var seatAreas: [SeatArea] {
+        bookingVM.selectedTimeSlot?.seatAreas ?? []
+    }
+
+    // Computed: Selected area's full info
+    private var selectedAreaInfo: SeatArea? {
+        seatAreas.first(where: { $0.code == selectedArea })
     }
     
     var body: some View {
@@ -61,10 +58,7 @@ struct SeatAreaSelectionView: View {
                                 
                                 // Stage - positioned below area A with enough space to avoid overlap
                                 StageView()
-//                                    .offset(y: 160)
                             }
-                            
-                            
                         }
                         .frame(height: 460)
                         .padding(.top, 20)
@@ -125,7 +119,10 @@ struct SeatAreaSelectionView: View {
                 
                 // Next button
                 Button(action: {
-                    navigateToSeatDetails = true
+                    if let selected = selectedAreaInfo {
+                        bookingVM.selectedSeatArea = selected
+                        path.append(BookingRoute.seatDetails)
+                    }
                 }) {
                     Text("Next")
                         .fontWeight(.semibold)
@@ -139,43 +136,6 @@ struct SeatAreaSelectionView: View {
             }
             .navigationTitle("Symphonia")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .navigationBarItems(leading: customBackButton)
-            .background(
-                NavigationLink(
-                    destination: SeatDetailsView(
-                        concert: concert,
-                        selectedDate: selectedDate,
-                        selectedTimeSlot: selectedTimeSlot,
-                        selectedArea: selectedArea,
-                        areaPrice: selectedAreaInfo?.price ?? 0
-                    ),
-                    isActive: $navigateToSeatDetails,
-                    label: { EmptyView() }
-                )
-            )
-            .onAppear {
-                // Load seat area data when view appears
-                loadSeatAreaData()
-            }
-        }
-    }
-    
-    // Load seat area data from DataService
-    private func loadSeatAreaData() {
-        seatAreas = DataService.shared.loadSeatAreas()
-    }
-    
-    // Custom back button
-    private var customBackButton: some View {
-        Button(action: {
-            dismiss()
-        }) {
-            HStack {
-                Image(systemName: "chevron.left")
-                Text("Back")
-            }
-            .foregroundColor(.purple)
         }
     }
 }
@@ -236,9 +196,9 @@ struct Arc: Shape {
 }
 
 #Preview {
-    SeatAreaSelectionView(
-        concert: Concert.sampleConcert,
-        selectedDate: 17,
-        selectedTimeSlot: 0
-    )
+    NavigationStack {
+        SeatAreaSelectionView(path: .constant(NavigationPath()))
+            .environmentObject(ConcertViewModel())
+            .environmentObject(BookingViewModel())
+    }
 }
