@@ -2,31 +2,13 @@ import Foundation
 
 struct Concert: Identifiable, Codable {
     var id = UUID()
-    let performerName: String
-    let composerName: String
     let startDate: String
     let endDate: String
     let title: String
     let description: String
     let programme: [String]
     let artistInfo: [String]
-    
     var availableDates: [AvailableDate]
-    
-//    static let sampleConcert = Concert(
-//        performerName: "ISLA MERCER",
-//        composerName: "RACHMANINOFF",
-//        startDate: "17",
-//        endDate: "19 August 2025",
-//        title: "Heart and Thunder",
-//        description: "Its rich harmonies and emotional depth carry you from intimate whispers to thunderous climaxes.",
-//        programme: [
-//            "ELIO NAKAMURA – Illumine* (World Premiere)"
-//        ],
-//        artistInfo: [
-//            "ALEXANDRIA CHEN · conductor"
-//        ]
-//    )
 }
 
 // This extension will be useful for data persistence later
@@ -42,21 +24,19 @@ extension Concert {
     }
     
     static let sampleConcert = Concert(
-            performerName: "ISLA MERCER",
-            composerName: "RACHMANINOFF",
-            startDate: "17",
-            endDate: "19 August 2025",
-            title: "Heart and Thunder",
-            description: "Its rich harmonies and emotional depth carry you from intimate whispers to thunderous climaxes.",
-            programme: [
-                "ELIO NAKAMURA – Illumine* (World Premiere)"
-            ],
-            artistInfo: [
-                "ALEXANDRIA CHEN · conductor"
-            ],
-            availableDates: generateSampleAvailableDates()
-        )
-        
+        startDate: "17",
+        endDate: "19 August 2025",
+        title: "ALEXANDRIA CHEN performs NAKAMURA - Illumine",
+        description: "Heart and Thunder. Its rich harmonies and emotional depth carry you from intimate whispers to thunderous climaxes.",
+        programme: [
+            "ELIO NAKAMURA – Illumine* (World Premiere)"
+        ],
+        artistInfo: [
+            "ALEXANDRIA CHEN · conductor"
+        ],
+        availableDates: generateSampleAvailableDates()
+    )
+    
         private static func generateSampleAvailableDates() -> [AvailableDate] {
             let days = [("17", "August", "2025"), ("18", "August", "2025"), ("19", "August", "2025")]
             return days.map { (date, month, year) in
