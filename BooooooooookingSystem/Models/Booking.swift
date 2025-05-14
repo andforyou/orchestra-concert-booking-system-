@@ -7,8 +7,6 @@ struct Booking: Codable, Identifiable {
     
     // The concert title and metadata (not full Concert object to avoid redundancy)
     let concertTitle: String
-    let performerName: String
-    let composerName: String
     
     // The date of the concert
     let date: String
@@ -41,8 +39,6 @@ struct Booking: Codable, Identifiable {
     // Initialize a new booking with the given details
     init(concert: Concert, date: String, month: String, year: String, timeSlot: String, areaCode: String, seatNumbers: [Int], totalPrice: Int, customer: Customer) {
         self.concertTitle = concert.title
-        self.performerName = concert.performerName
-        self.composerName = concert.composerName
         self.date = date
         self.month = month
         self.year = year
@@ -56,6 +52,6 @@ struct Booking: Codable, Identifiable {
     
     // Coding keys for encoding and decoding
     enum CodingKeys: String, CodingKey {
-        case concertTitle, performerName, composerName, date, month, year, timeSlot, areaCode, seatNumbers, totalPrice, customer, bookingDate
+        case concertTitle, date, month, year, timeSlot, areaCode, seatNumbers, totalPrice, customer, bookingDate
     }
 }

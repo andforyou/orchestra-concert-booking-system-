@@ -40,7 +40,8 @@ struct BookingDetailsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     
                     
-                    Text("\(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].performerName) performs \(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].composerName)")
+
+                    Text("\(concertVM.concert.title)")
                         .font(.subheadline)
                     
                     Text(bookingVM.selectedDate?.fullDateString ?? "-")

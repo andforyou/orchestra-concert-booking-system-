@@ -7,7 +7,7 @@ struct ConcertBookingSystemApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HomeTabView()
                 .environmentObject(concertVM)
                 .environmentObject(bookingVM)
         }

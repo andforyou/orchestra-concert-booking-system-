@@ -17,7 +17,7 @@ struct ConcertDetailsView: View {
                 
                 VStack(alignment: .leading, spacing: 16) {
                     // Main concert info
-                    Text("\(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].performerName) performs \(concertVM.concerts[bookingVM.selectedConcertIndex ?? 0].composerName)")
+                    Text("\(concertVM.concert.title)")
                         .font(.headline)
                         .fontWeight(.medium)
                     
