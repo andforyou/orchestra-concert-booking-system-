@@ -84,7 +84,7 @@ struct SeatDetailsView: View {
             .padding(.bottom)
             .disabled(selectedSeats.isEmpty) // Disable if no seats selected
         }
-        .navigationTitle("Symphonia")
+        .navigationTitle("Seat Selection")
         .navigationBarTitleDisplayMode(.inline)
     }
     

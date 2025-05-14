@@ -1,7 +1,7 @@
 import SwiftUI
 
-// MARK: - Type-Safe Navigation Route Enum
 enum BookingRoute: Hashable, Equatable {
+    case concertDetails
     case dateSelection
     case seatAreaSelection
     case seatDetails
@@ -12,33 +12,22 @@ struct ContentView: View {
     @EnvironmentObject var concertVM: ConcertViewModel
     @EnvironmentObject var bookingVM: BookingViewModel
     
-    @State private var path = NavigationPath()
-    
     var body: some View {
-        NavigationStack(path: $path) {
-            // Entry point: concert details screen
-            ConcertDetailsView(path: $path)
+        TabView {
+            // First Tab: Concert List
+            ConcertListView()
                 .environmentObject(concertVM)
                 .environmentObject(bookingVM)
-                .navigationDestination(for: BookingRoute.self) { route in
-                    switch route {
-                    case .dateSelection:
-                        DateSelectionView(path: $path)
-                            .environmentObject(concertVM)
-                            .environmentObject(bookingVM)
-                    case .seatAreaSelection:
-                        SeatAreaSelectionView(path: $path)
-                            .environmentObject(concertVM)
-                            .environmentObject(bookingVM)
-                    case .seatDetails:
-                        SeatDetailsView(path: $path)
-                            .environmentObject(concertVM)
-                            .environmentObject(bookingVM)
-                    case .bookingDetails:
-                        BookingDetailsView(path: $path)
-                            .environmentObject(concertVM)
-                            .environmentObject(bookingVM)
-                    }
+                .tabItem {
+                    Label("Book Concert", systemImage: "music.note.list")
+                }
+
+            // Second Tab: Booking History
+            BookingHistoryView()
+                .environmentObject(concertVM)
+                .environmentObject(bookingVM)
+                .tabItem {
+                    Label("My Bookings", systemImage: "ticket")
                 }
         }
     }
@@ -46,10 +35,10 @@ struct ContentView: View {
 
 #Preview {
     let concertVM = ConcertViewModel()
-    concertVM.concerts = [.sampleConcert] // ✅ Assign array of one
+    concertVM.concerts = [.sampleConcert] // Assign array of one
 
     let bookingVM = BookingViewModel()
-    bookingVM.selectedConcertIndex = 0     // ✅ Point to first (and only) concert
+    bookingVM.selectedConcertIndex = 0     // Point to first (and only) concert
 
     return ContentView()
         .environmentObject(concertVM)
